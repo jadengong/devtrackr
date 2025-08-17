@@ -9,6 +9,12 @@ class TaskCreate(BaseModel):
     description: Optional[str] = None
     category: Optional[str] = None
 
+class TaskUpdate(BaseModel):
+    title: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    description: Optional[str] = None
+    category: Optional[str] = None
+    status: Optional[Literal["todo", "doing", "done"]] = None
+
 # In-memory storage (temp database)
 tasks: list[dict] = []
 _next_id = 1
@@ -74,7 +80,7 @@ def create_task(payload: TaskCreate):
     return task
 
 # GET
-@app.get("/tasks", status_code=status.HTTP_202_ACCEPTED)
+@app.get("/tasks")
 def list_task():
     return tasks
 
@@ -88,3 +94,15 @@ def get_task(task_id : int):
     
     raise HTTPException(status_code=404, detail="Task not found")
 
+# PATCH /tasks/{id} to modify 
+@app.patch("/tasks/{task_id}")
+def patch_task(task_id : int, payload : TaskUpdate):
+    # Loop through tasks to find task
+    for t in tasks:
+        if t["id"] == task_id:
+            # Only the fields that were actually sent
+            updates = payload.model_dump(exclude_unset=True)
+            # Apply updates in place 
+            t.update(updates)
+            return t
+    raise HTTPException(status_code=404, detail = "Task not found")
