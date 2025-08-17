@@ -16,7 +16,7 @@ class TaskUpdate(BaseModel):
     status: Optional[Literal["todo", "doing", "done"]] = None
 
 # In-memory storage (temp database)
-tasks: list[dict] = []
+tasks: dict[list, dict] = {} 
 _next_id = 1
 
 # Define genid to be used in create_task
@@ -76,33 +76,41 @@ def create_task(payload: TaskCreate):
         "status" : "todo",
     }
 
-    tasks.append(task)
+    tasks[new_id] = task
     return task
 
 # GET
 @app.get("/tasks")
 def list_task():
-    return tasks
+    return list(tasks.values())
 
 # GET, but by {id}
 @app.get("/tasks/{task_id}")
 def get_task(task_id : int):
-    # Loop through tasks, if find task with id == task_id, return it, otherwise raise HTTPException (404)
-    for t in tasks:
-        if(task_id == t["id"]):
-            return t
-    
-    raise HTTPException(status_code=404, detail="Task not found")
+    task = tasks.get(task_id)
+
+    if task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
 
 # PATCH /tasks/{id} to modify 
 @app.patch("/tasks/{task_id}")
 def patch_task(task_id : int, payload : TaskUpdate):
-    # Loop through tasks to find task
-    for t in tasks:
-        if t["id"] == task_id:
-            # Only the fields that were actually sent
-            updates = payload.model_dump(exclude_unset=True)
-            # Apply updates in place 
-            t.update(updates)
-            return t
-    raise HTTPException(status_code=404, detail = "Task not found")
+    task = tasks.get(task_id)
+
+    if task is None:
+        raise HTTPException(status_code=404, detail = "Task not found")
+
+    updates = payload.model_dump(exclude_unset=True) # Since PATCH is a partial update, user might only send "status" : "doing" , basically says include fields that were actually sent in req body
+    task.update(updates)
+    return task
+
+# DELETE
+@app.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_task(task_id : int):
+    if task_id not in tasks:
+        raise HTTPException(status_code=404, detail = "Task not found")
+    del tasks[task_id]
+
+    return
+
