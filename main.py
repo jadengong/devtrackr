@@ -34,10 +34,6 @@ app = FastAPI()
 def root():
     return {"status" : "ok", "message" : "Welcome to DevTrackr API"}
 
-@app.get("/hello")
-def hello():
-    return {"msg": "Hello world"}
-
 @app.get("/time")
 def current_time(format: Literal["iso", "seconds"] = "iso"): # = "iso" is the default value
     # 1. Get the current UTC time
