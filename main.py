@@ -77,8 +77,20 @@ def create_task(payload: TaskCreate):
 
 # GET
 @app.get("/tasks")
-def list_task():
-    return list(tasks.values())
+def list_task(
+    status: Optional[Literal["todo", "doing", "done"]] = None,
+    category: Optional[str] = None
+):
+
+    data = list(tasks.values()) # start with all tasks
+
+    if status:
+        data = [t for t in data if t["status"] == status]
+
+    if category:
+        data = [t for t in data if t["category"] == category]
+
+    return data
 
 # GET, but by {id}
 @app.get("/tasks/{task_id}")
