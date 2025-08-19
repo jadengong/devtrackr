@@ -52,3 +52,16 @@ This document tracks my progress as I build DevTrackr, a FastAPI-based task trac
 - Next:
   - Add filters to `GET /tasks` (e.g. `?status=todo&category=work`)
   - Prepare for database (PostgreSQL) integration later
+
+## Day 4 — Filtering and Preparation for Tests
+- Added:
+  - Query parameter filters to `GET /tasks` (by `status` and `category`)
+  - Restricted `status` filter with `Literal["todo", "doing", "done"]` so invalid values return 422
+- Learned:
+  - How query parameters can modify list endpoints
+  - How `Literal` enforces valid choices and automatically rejects bad inputs
+  - Why filtering logic usually starts with the full dataset and then applies conditions step by step
+- Challenge:
+  - Needed to understand the difference between “optional param not provided” vs. “param provided with bad value”
+- Next:
+  - Add basic tests with pytest to check `/time` and full task lifecycle
