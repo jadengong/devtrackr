@@ -65,3 +65,20 @@ This document tracks my progress as I build DevTrackr, a FastAPI-based task trac
   - Needed to understand the difference between “optional param not provided” vs. “param provided with bad value”
 - Next:
   - Add basic tests with pytest to check `/time` and full task lifecycle
+
+## Day 5 — Testing
+- Added:
+  - Basic pytest setup with `TestClient`
+  - Tests for `/time` endpoint
+  - Tests for tasks lifecycle (`POST`, `GET`, `GET by id`)
+- Learned:
+  - How to structure tests in a separate `tests/` folder
+  - Why a reset helper is needed so tests don’t interfere with each other
+  - How `pytest` automatically discovers and runs test files
+- Challenge:
+  - Initially ran into import errors (`ModuleNotFoundError`) and a SyntaxError from `_reset_state_for_test`
+  - Fixed by cleaning up `main.py` and keeping test code in its own files
+- Next:
+  - Consider adding pagination (`limit`, `offset`) to `GET /tasks`
+  - Or move on to database integration with PostgreSQL and SQLAlchemy
+  - Think that database integration is best for now to move on from the in-memory

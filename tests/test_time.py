@@ -4,8 +4,7 @@ import main
 client = TestClient(main.app)
 
 def setup_function():
-    # Make each test independent
-    main._reset_state_for_tests()
+    main._reset_state_for_test()
 
 def test_time_default_ok():
     resp = client.get("/time")

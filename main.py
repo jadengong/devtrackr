@@ -21,7 +21,7 @@ _next_id = 1
 
 def _reset_state_for_test():
     global tasks, _next_id
-    tasks.clear() if isinstance(tasks, dict) else tasks[:] = []
+    tasks.clear()
     _next_id = 1
 
 # Define genid to be used in create_task
