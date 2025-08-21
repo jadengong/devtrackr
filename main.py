@@ -19,12 +19,18 @@ class TaskUpdate(BaseModel):
 tasks: dict[list, dict] = {} 
 _next_id = 1
 
+def _reset_state_for_test():
+    global tasks, _next_id
+    tasks.clear() if isinstance(tasks, dict) else tasks[:] = []
+    _next_id = 1
+
 # Define genid to be used in create_task
 def _gen_id() -> int:
     global _next_id
     i = _next_id
     _next_id += 1
     return i
+
 
 # FastAPI App
 app = FastAPI()
