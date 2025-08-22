@@ -2,6 +2,7 @@ from fastapi import FastAPI, status, HTTPException
 from datetime import datetime, timezone
 from typing import Literal, Optional # Only accepts iso, seconds, for /time, 422 for anything else 
 from pydantic import BaseModel, Field # Parent class for defining data model, and adding extra rules to model fields
+from routers import tasks as task_router
 
 # Pydantic Model(s)
 class TaskCreate(BaseModel):
@@ -31,6 +32,10 @@ def _gen_id() -> int:
     _next_id += 1
     return i
 
+
+# Wire router
+app = FastAPI(title="DevTrackr")
+app.include_router(task_router.router)
 
 # FastAPI App
 app = FastAPI()

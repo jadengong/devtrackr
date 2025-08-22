@@ -82,3 +82,23 @@ This document tracks my progress as I build DevTrackr, a FastAPI-based task trac
   - Consider adding pagination (`limit`, `offset`) to `GET /tasks`
   - Or move on to database integration with PostgreSQL and SQLAlchemy
   - Think that database integration is best for now to move on from the in-memory
+
+## Day 6 — DB Integration Progress
+
+- Set up `.env` with `DATABASE_URL` and configured `db.py` (SQLAlchemy engine, SessionLocal, Base).
+- Defined `Task` ORM model in `models.py` with enum `TaskStatus`, timestamps, defaults, and indexes.
+- Installed & configured Alembic:
+  - Fixed `alembic/env.py` to load `.env`, import `Base`, and include models.
+  - First autogenerate didn’t pick up `Task` → fixed imports and re-ran.
+  - Successfully generated migration with `tasks` table + enum type.
+  - Verified in Postgres (`\dt`, `\d tasks`) that schema is correct.
+- Updated `main.py`, `routers/tasks.py`, `schemas.py`, and `deps.py` for DB-backed CRUD.
+- Swagger UI at `/docs` shows full CRUD API, tested endpoints manually.
+- Next steps (tomorrow): add pytest suite with a clean test DB to automate CRUD checks.
+
+**Challenges solved:**
+- Relative imports vs absolute (`from db import Base` instead of `from .db import Base`).
+- Alembic not detecting models until we explicitly `import models` in `env.py`.
+- Conflicts between old in-memory code and new DB-backed router.
+
+**Takeaway:** Got full end-to-end DB integration working — FastAPI ↔ SQLAlchemy ↔ Alembic ↔ Postgres 🚀
