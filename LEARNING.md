@@ -85,20 +85,26 @@ This document tracks my progress as I build DevTrackr, a FastAPI-based task trac
 
 ## Day 6 — DB Integration Progress
 
-- Set up `.env` with `DATABASE_URL` and configured `db.py` (SQLAlchemy engine, SessionLocal, Base).
-- Defined `Task` ORM model in `models.py` with enum `TaskStatus`, timestamps, defaults, and indexes.
-- Installed & configured Alembic:
-  - Fixed `alembic/env.py` to load `.env`, import `Base`, and include models.
-  - First autogenerate didn’t pick up `Task` → fixed imports and re-ran.
-  - Successfully generated migration with `tasks` table + enum type.
-  - Verified in Postgres (`\dt`, `\d tasks`) that schema is correct.
-- Updated `main.py`, `routers/tasks.py`, `schemas.py`, and `deps.py` for DB-backed CRUD.
-- Swagger UI at `/docs` shows full CRUD API, tested endpoints manually.
-- Next steps (tomorrow): add pytest suite with a clean test DB to automate CRUD checks.
+- Added:
+  - `.env` with `DATABASE_URL` and updated `db.py` for SQLAlchemy engine, `SessionLocal`, and `Base`.
+  - `Task` ORM model in `models.py` with `TaskStatus` enum, timestamps, defaults, and indexes.
+  - Alembic setup and first migration (`tasks` table + `task_status` enum).
+  - Updated `main.py`, `routers/tasks.py`, `schemas.py`, and `deps.py` for DB-backed CRUD.
+  - Verified endpoints via Swagger UI at `/docs`.
 
-**Challenges solved:**
-- Relative imports vs absolute (`from db import Base` instead of `from .db import Base`).
-- Alembic not detecting models until we explicitly `import models` in `env.py`.
-- Conflicts between old in-memory code and new DB-backed router.
+- Learned:
+  - Alembic only detects models if they are imported in `env.py` (`import models`).
+  - Why `server_default` is useful to keep defaults consistent between Python and Postgres.
+  - How absolute imports (`from db import Base`) avoid `ImportError` compared to relative imports.
+  - Swagger is a fast way to smoke-test new DB-backed endpoints.
 
-**Takeaway:** Got full end-to-end DB integration working — FastAPI ↔ SQLAlchemy ↔ Alembic ↔ Postgres 🚀
+- Challenge:
+  - First Alembic revision was empty because models weren’t imported.
+  - Hit `ImportError` (`attempted relative import`) until switching to absolute paths.
+  - Router collision (`tasks` dict vs `tasks` module) caused `"dict has no attribute router"`.
+
+- Next:
+  - Add pytest suite that uses a clean Postgres test DB.
+  - Automate CRUD tests (`POST`, `GET`, `PATCH`, `DELETE`) instead of only Swagger.
+  - Consider pagination (`limit`, `offset`) for `GET /tasks`.
+
