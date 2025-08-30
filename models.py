@@ -9,6 +9,12 @@ class TaskStatus(str, enum.Enum):
     in_progress = "in_progress"
     done = "done"
 
+class TaskPriority(str, enum.Enum):
+    low = "low"
+    medium = "medium"
+    high = "high"
+    urgent = "urgent"
+
 class User(Base):
     __tablename__ = "users"
 
@@ -41,7 +47,14 @@ class Task(Base):
         index=True,
     )
 
-    priority: Mapped[int] = mapped_column(Integer, nullable=False, default=3, server_default="3")  # 1–5 
+    priority: Mapped[TaskPriority] = mapped_column(
+        Enum(TaskPriority, name="task_priority"),  # Postgres ENUM type named "task_priority"
+        nullable=False,
+        default=TaskPriority.medium,               # client-side default
+        server_default=TaskPriority.medium.value,  # DB-side default
+        index=True,
+    )
+
     due_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
     estimated_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True)  # Estimated time to complete
     actual_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True)     # Actual time spent
@@ -67,7 +80,9 @@ class Task(Base):
     __table_args__ = (
         Index("ix_tasks_status_due", "status", "due_date"),
         Index("ix_tasks_owner_status", "owner_id", "status"),
+        Index("ix_tasks_priority", "priority"),
+        Index("ix_tasks_owner_priority", "owner_id", "priority"),
     )
 
     def __repr__(self) -> str:
-        return f"<Task id={self.id} title={self.title!r} status={self.status} prio={self.priority}>"
+        return f"<Task id={self.id} title={self.title!r} status={self.status} priority={self.priority}>"

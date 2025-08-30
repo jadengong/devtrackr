@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, Field, EmailStr
-from models import TaskStatus
+from models import TaskStatus, TaskPriority
 
 # User Schemas
 class UserBase(BaseModel):
@@ -41,7 +41,7 @@ class TaskBase(BaseModel):
     description: Optional[str] = None
     category: Optional[str] = Field(None, max_length=100)
     status: Optional[TaskStatus] = None
-    priority: Optional[int] = Field(default=3, ge=1, le=5)
+    priority: Optional[TaskPriority] = TaskPriority.medium
     due_date: Optional[datetime] = None
     estimated_minutes: Optional[int] = Field(None, ge=1)  # Minimum 1 minute
     actual_minutes: Optional[int] = Field(None, ge=0)     # Minimum 0 minutes
@@ -54,7 +54,7 @@ class TaskUpdate(BaseModel):
     description: Optional[str] = None
     category: Optional[str] = Field(None, max_length=100)
     status: Optional[TaskStatus] = None
-    priority: Optional[int] = Field(default=None, ge=1, le=5)
+    priority: Optional[TaskPriority] = None
     due_date: Optional[datetime] = None
     estimated_minutes: Optional[int] = Field(None, ge=1)
     actual_minutes: Optional[int] = Field(None, ge=0)
