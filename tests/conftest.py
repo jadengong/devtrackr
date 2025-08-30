@@ -43,7 +43,7 @@ def db_engine():
 
     # Drop all tables first to avoid index conflicts
     Base.metadata.drop_all(bind=temp_engine)
-    
+
     # Create all tables fresh
     Base.metadata.create_all(bind=temp_engine)
 
