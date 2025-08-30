@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from routers import tasks as task_router
 from routers import auth as auth_router
 from routers import metrics as metrics_router
+from datetime import datetime
 
 # Create FastAPI app
 app = FastAPI(title="DevTrackr")
@@ -25,5 +26,5 @@ def health_check():
         "status": "healthy",
         "service": "DevTrackr API",
         "version": "1.0.0",
-        "timestamp": "2024-01-01T00:00:00Z",
+        "timestamp": datetime.utcnow().isoformat(),
     }
