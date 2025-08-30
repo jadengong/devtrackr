@@ -22,6 +22,7 @@ if str(ROOT) not in sys.path:
 # --- load env vars from .env (optional but convenient) ---
 try:
     from dotenv import load_dotenv  # type: ignore
+
     load_dotenv(ROOT / ".env")
 except Exception:
     pass  # safe to ignore if python-dotenv isn't installed
@@ -34,7 +35,9 @@ if database_url:
 # --- import your metadata for autogenerate ---
 from db import Base
 import models
+
 target_metadata = Base.metadata
+
 
 # --- offline migrations ---
 def run_migrations_offline() -> None:
@@ -50,6 +53,7 @@ def run_migrations_offline() -> None:
     )
     with context.begin_transaction():
         context.run_migrations()
+
 
 # --- online migrations ---
 def run_migrations_online() -> None:
@@ -69,6 +73,7 @@ def run_migrations_online() -> None:
         )
         with context.begin_transaction():
             context.run_migrations()
+
 
 if context.is_offline_mode():
     run_migrations_offline()

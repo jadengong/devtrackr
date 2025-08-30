@@ -11,8 +11,19 @@ app.include_router(task_router.router)
 app.include_router(auth_router.router)
 app.include_router(metrics_router.router)
 
+
 # Root endpoint
 @app.get("/")
 def root():
     return {"status": "ok", "message": "Welcome to DevTrackr API"}
 
+
+# Health check endpoint for Docker and monitoring
+@app.get("/health")
+def health_check():
+    return {
+        "status": "healthy",
+        "service": "DevTrackr API",
+        "version": "1.0.0",
+        "timestamp": "2024-01-01T00:00:00Z",
+    }
