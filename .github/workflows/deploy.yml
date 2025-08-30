@@ -48,7 +48,7 @@ jobs:
           
       - name: Run tests before deployment
         run: |
-          export TEST_DATABASE_URL=sqlite:///./test_deploy.db
+          export TEST_DATABASE_URL=sqlite:///:memory:
           echo "Running tests with database URL: $TEST_DATABASE_URL"
           echo "Python version: $(python --version)"
           echo "Installed packages: $(pip list | grep -E '(pytest|sqlalchemy|fastapi)')"
@@ -103,14 +103,17 @@ jobs:
           rm -f test_deploy.db test_prod.db
           # Use in-memory database for testing (matches conftest.py)
           echo "TEST_DATABASE_URL=sqlite:///:memory:" > .env.test
+          echo "DATABASE_URL=sqlite:///:memory:" >> .env.test
           echo "Current directory: $(pwd)"
           echo "Files in current directory: $(ls -la)"
           echo "Test database URL: $(cat .env.test)"
           
       - name: Run production tests
         run: |
-          export TEST_DATABASE_URL=sqlite:///./test_prod.db
+          export TEST_DATABASE_URL=sqlite:///:memory:
+          export DATABASE_URL=sqlite:///:memory:
           echo "Running production tests with database URL: $TEST_DATABASE_URL"
+          echo "Main database URL: $DATABASE_URL"
           echo "Python version: $(python --version)"
           echo "Installed packages: $(pip list | grep -E '(pytest|sqlalchemy|fastapi)')"
           python -m pytest tests/ --cov=. --cov-report=term-missing --tb=short -v
