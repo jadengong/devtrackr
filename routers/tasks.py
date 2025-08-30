@@ -3,7 +3,7 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from models import Task, TaskStatus, User
+from models import Task, TaskStatus, TaskPriority, User
 from schemas import TaskCreate, TaskUpdate, TaskOut
 from deps import get_db, get_current_active_user
 
@@ -22,7 +22,7 @@ def create_task(
         description=payload.description,
         category=payload.category,
         status=TaskStatus(payload.status) if payload.status else TaskStatus.todo,
-        priority=payload.priority or 3,
+        priority=payload.priority or TaskPriority.medium,
         due_date=payload.due_date,
         estimated_minutes=payload.estimated_minutes,
         actual_minutes=payload.actual_minutes,
@@ -100,6 +100,8 @@ def update_task(
     updates = payload.model_dump(exclude_unset=True)
     if "status" in updates and updates["status"] is not None:
         updates["status"] = TaskStatus(updates["status"])
+    if "priority" in updates and updates["priority"] is not None:
+        updates["priority"] = TaskPriority(updates["priority"])
 
     for field, value in updates.items():
         setattr(task, field, value)

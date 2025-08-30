@@ -99,7 +99,7 @@ class TestTasksAPI:
 
         # PATCH one task to update status and priority
         task_to_update = created_tasks[0]  # First task
-        update_data = {"status": "in_progress", "priority": 1}
+        update_data = {"status": "in_progress", "priority": "urgent"}
 
         response = client.patch(f"/tasks/{task_to_update['id']}", json=update_data)
         assert response.status_code == status.HTTP_200_OK
@@ -109,7 +109,7 @@ class TestTasksAPI:
         assert updated_task["id"] == task_to_update["id"]
         assert updated_task["title"] == task_to_update["title"]  # Unchanged
         assert updated_task["status"] == "in_progress"  # Updated
-        assert updated_task["priority"] == 1  # Updated
+        assert updated_task["priority"] == "urgent"  # Updated
         assert updated_task["is_archived"] is False
 
         # DELETE one task (soft delete)
@@ -160,7 +160,7 @@ class TestTasksAPI:
         created_task = response.json()
         assert created_task["title"] == "Minimal Task"
         assert created_task["description"] is None
-        assert created_task["priority"] == 3  # Default priority
+        assert created_task["priority"] == "medium"  # Default priority
         assert created_task["status"] == "todo"  # Default status
         assert created_task["is_archived"] is False
 
