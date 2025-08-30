@@ -13,7 +13,8 @@ load_dotenv()
 # Import your app and database components
 from main import app
 from db import Base
-from deps import get_db
+from deps import get_db, get_current_active_user
+from models import User, Task
 
 # Load test database URL from environment
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "sqlite:///./test.db")
@@ -57,8 +58,27 @@ def db_session(db_engine) -> Generator[Session, None, None]:
 
 
 @pytest.fixture(scope="function")
-def client(db_session) -> Generator[TestClient, None, None]:
-    """Create a test client with overridden database dependency."""
+def test_user(db_session) -> User:
+    """Create a test user for authentication."""
+    from deps import get_password_hash
+    
+    user = User(
+        email="test@example.com",
+        username="testuser",
+        hashed_password=get_password_hash("testpassword123"),
+        is_active=True
+    )
+    
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+    
+    return user
+
+
+@pytest.fixture(scope="function")
+def client(db_session, test_user) -> Generator[TestClient, None, None]:
+    """Create a test client with overridden database dependency and authentication."""
     
     def override_get_db():
         try:
@@ -66,11 +86,69 @@ def client(db_session) -> Generator[TestClient, None, None]:
         finally:
             pass  # Don't close the session here, it's managed by the fixture
     
-    # Override the get_db dependency
+    def override_get_current_active_user():
+        """Override authentication to return our test user."""
+        return test_user
+    
+    # Override the dependencies
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_current_active_user] = override_get_current_active_user
     
     with TestClient(app) as test_client:
         yield test_client
     
-    # Clear the dependency override
+    # Clear the dependency overrides
     app.dependency_overrides.clear()
+
+
+@pytest.fixture(scope="function")
+def sample_task_data():
+    """Provide sample task data for testing."""
+    return {
+        "title": "Test Task",
+        "description": "This is a test task",
+        "priority": 3
+    }
+
+
+@pytest.fixture(scope="function")
+def sample_task(db_session, test_user, sample_task_data):
+    """Create a sample task in the database for testing."""
+    from models import Task, TaskStatus
+    
+    task = Task(
+        title=sample_task_data["title"],
+        description=sample_task_data["description"],
+        status=TaskStatus.todo,
+        priority=3,
+        owner_id=test_user.id
+    )
+    
+    db_session.add(task)
+    db_session.commit()
+    db_session.refresh(task)
+    
+    return task
+
+
+@pytest.fixture(scope="function")
+def multiple_tasks(db_session, test_user):
+    """Create multiple tasks for testing list operations."""
+    from models import Task, TaskStatus
+    
+    tasks = [
+        Task(title="Task 1", status=TaskStatus.todo, priority=1, owner_id=test_user.id),
+        Task(title="Task 2", status=TaskStatus.in_progress, priority=2, owner_id=test_user.id),
+        Task(title="Task 3", status=TaskStatus.done, priority=3, owner_id=test_user.id),
+    ]
+    
+    for task in tasks:
+        db_session.add(task)
+    
+    db_session.commit()
+    
+    # Refresh all tasks to get their IDs
+    for task in tasks:
+        db_session.refresh(task)
+    
+    return tasks

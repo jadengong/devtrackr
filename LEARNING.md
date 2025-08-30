@@ -14,7 +14,7 @@ This document tracks my progress as I build DevTrackr, a FastAPI-based task trac
   - What `Literal` does for query params (`"iso" | "seconds"`)
   - Difference between path params, query params, and request body
 - Challenge:
-  - Didn’t understand why `utcnow()` was flagged → learned to use `datetime.now(timezone.utc)`
+  - Didn't understand why `utcnow()` was flagged → learned to use `datetime.now(timezone.utc)`
 - Next:
   - Add `POST /tasks` with in-memory storage
 
@@ -44,7 +44,7 @@ This document tracks my progress as I build DevTrackr, a FastAPI-based task trac
   - Switched storage from list to dict for O(1) lookups
 - Learned:
   - What `HTTPException` is and why to raise it instead of returning an error JSON
-  - Difference between “unset” vs “None” in PATCH requests
+  - Difference between "unset" vs "None" in PATCH requests
   - Dict lookups make code much cleaner than list loops
 - Challenge:
   - At first I put `raise HTTPException` inside the loop → realized it needs to be after the loop
@@ -62,7 +62,7 @@ This document tracks my progress as I build DevTrackr, a FastAPI-based task trac
   - How `Literal` enforces valid choices and automatically rejects bad inputs
   - Why filtering logic usually starts with the full dataset and then applies conditions step by step
 - Challenge:
-  - Needed to understand the difference between “optional param not provided” vs. “param provided with bad value”
+  - Needed to understand the difference between "optional param not provided" vs. "param provided with bad value"
 - Next:
   - Add basic tests with pytest to check `/time` and full task lifecycle
 
@@ -73,7 +73,7 @@ This document tracks my progress as I build DevTrackr, a FastAPI-based task trac
   - Tests for tasks lifecycle (`POST`, `GET`, `GET by id`)
 - Learned:
   - How to structure tests in a separate `tests/` folder
-  - Why a reset helper is needed so tests don’t interfere with each other
+  - Why a reset helper is needed so tests don't interfere with each other
   - How `pytest` automatically discovers and runs test files
 - Challenge:
   - Initially ran into import errors (`ModuleNotFoundError`) and a SyntaxError from `_reset_state_for_test`
@@ -99,7 +99,7 @@ This document tracks my progress as I build DevTrackr, a FastAPI-based task trac
   - Swagger is a fast way to smoke-test new DB-backed endpoints.
 
 - Challenge:
-  - First Alembic revision was empty because models weren’t imported.
+  - First Alembic revision was empty because models weren't imported.
   - Hit `ImportError` (`attempted relative import`) until switching to absolute paths.
   - Router collision (`tasks` dict vs `tasks` module) caused `"dict has no attribute router"`.
 
@@ -107,4 +107,101 @@ This document tracks my progress as I build DevTrackr, a FastAPI-based task trac
   - Add pytest suite that uses a clean Postgres test DB.
   - Automate CRUD tests (`POST`, `GET`, `PATCH`, `DELETE`) instead of only Swagger.
   - Consider pagination (`limit`, `offset`) for `GET /tasks`.
+
+## Day 7 — Authentication System & Testing Infrastructure
+
+- Added:
+  - **Complete JWT Authentication System:**
+    - `User` model with secure password hashing using bcrypt
+    - JWT token generation and validation with `python-jose`
+    - Protected routes requiring authentication
+    - User registration (`POST /auth/register`) and login (`POST /auth/login`)
+  - **Enhanced Task Management:**
+    - User ownership for all tasks (users can only see their own tasks)
+    - Time tracking fields (`estimated_minutes`, `actual_minutes`)
+    - Timer endpoints (`POST /tasks/{id}/start-timer`, `POST /tasks/{id}/stop-timer`)
+    - Authorization checks (403 errors for unauthorized access)
+  - **Robust Testing Infrastructure:**
+    - `conftest.py` with database fixtures and authentication overrides
+    - Test database isolation with automatic rollback
+    - Authentication fixtures for testing protected endpoints
+    - Comprehensive end-to-end API tests
+
+- Learned:
+  - **Security Best Practices:**
+    - How to hash passwords with bcrypt and verify them securely
+    - JWT token structure and expiration handling
+    - Why `get_current_active_user` dependency protects routes
+  - **Database Relationships:**
+    - How to set up foreign keys between `User` and `Task` models
+    - Cascade behavior for user deletion
+    - Indexing strategies for performance (`ix_tasks_owner_status`)
+  - **Testing with Authentication:**
+    - How to override FastAPI dependencies in tests
+    - Database transaction management for test isolation
+    - Creating test users and tasks with proper relationships
+  - **Command Line Tools:**
+    - Using `python -m` for tools not in PATH (`python -m pytest`, `python -m alembic`)
+    - Docker Compose for PostgreSQL database management
+
+- Challenge:
+  - **Authentication Integration:**
+    - Initially all tests failed with 403 errors because endpoints required authentication
+    - Had to understand how FastAPI dependency injection works for testing
+    - Needed to override both `get_db` and `get_current_active_user` dependencies
+  - **Database Setup:**
+    - Docker Desktop wasn't running initially, causing connection errors
+    - Alembic needed the database to be running to generate migrations
+    - Had to learn the proper sequence: start Docker → run migration → test
+  - **Import Dependencies:**
+    - Added new packages (`bcrypt`, `python-jose`, `email-validator`, `passlib`)
+    - Had to update requirements.txt and install all dependencies
+
+- Next:
+  - **Metrics & Analytics Endpoints:**
+    - Task completion rates and time tracking analytics
+    - Category breakdowns and weekly productivity reports
+    - Performance dashboards for users
+  - **Advanced Features:**
+    - Task categories and tags for better organization
+    - Due date management with reminders
+    - Team collaboration features
+  - **Production Readiness:**
+    - Environment configuration management
+    - Security hardening (rate limiting, CORS)
+    - CI/CD pipeline with GitHub Actions
+
+---
+
+## Project Status Summary
+
+### ✅ **Completed Features:**
+- **Core API:** FastAPI with automatic OpenAPI documentation
+- **Database:** PostgreSQL + SQLAlchemy ORM with Alembic migrations
+- **Authentication:** JWT-based user system with secure password hashing
+- **Task Management:** Full CRUD operations with user ownership
+- **Time Tracking:** Estimated vs actual time tracking with timer endpoints
+- **Testing:** Comprehensive test suite with authentication and database fixtures
+- **Infrastructure:** Docker containerization and dependency management
+
+### 🎯 **Current Architecture:**
+- **Backend:** FastAPI with modular router structure
+- **Database:** PostgreSQL with SQLAlchemy 2.0
+- **Authentication:** JWT tokens with bcrypt password hashing
+- **Testing:** pytest with database isolation and authentication overrides
+- **Documentation:** Auto-generated OpenAPI/Swagger at `/docs`
+
+### 🚀 **Ready for Production:**
+- Secure user authentication and authorization
+- Database-driven architecture with proper relationships
+- Comprehensive test coverage
+- Containerized deployment with Docker
+- Clean, maintainable code structure
+
+### 📚 **Skills Demonstrated:**
+- **Backend Development:** FastAPI, SQLAlchemy, PostgreSQL
+- **Security:** JWT authentication, password hashing, authorization
+- **Testing:** pytest, test fixtures, database testing
+- **DevOps:** Docker, Docker Compose, dependency management
+- **API Design:** RESTful endpoints, validation, error handling
 
