@@ -1,11 +1,15 @@
 from fastapi import FastAPI
 from routers import tasks as task_router
+from routers import auth as auth_router
+from routers import metrics as metrics_router
 
 # Create FastAPI app
 app = FastAPI(title="DevTrackr")
 
 # Include routers
 app.include_router(task_router.router)
+app.include_router(auth_router.router)
+app.include_router(metrics_router.router)
 
 # Root endpoint
 @app.get("/")
