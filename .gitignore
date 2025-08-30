@@ -5,6 +5,12 @@ venv/
 # Python cache files
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Pytest cache
+.pytest_cache/
+.pytest_cache/
 
 # VS Code settings
 .vscode/
@@ -12,3 +18,13 @@ __pycache__/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
