@@ -37,20 +37,21 @@ def db_engine():
     # Use a fresh database file for each test session
     import tempfile
     import os
-    
+
     # Create a temporary database file
-    temp_db = tempfile.NamedTemporaryFile(delete=False, suffix='.db')
+    temp_db = tempfile.NamedTemporaryFile(delete=False, suffix=".db")
     temp_db.close()
-    
+
     # Create a new engine with the temporary database
     from sqlalchemy import create_engine
+
     temp_engine = create_engine(f"sqlite:///{temp_db.name}")
-    
+
     # Create all tables fresh
     Base.metadata.create_all(bind=temp_engine)
-    
+
     yield temp_engine
-    
+
     # Clean up: close engine and remove temp file
     temp_engine.dispose()
     os.unlink(temp_db.name)
