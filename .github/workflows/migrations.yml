@@ -87,7 +87,7 @@ jobs:
           echo "Schema backup created at ${{ steps.timestamp.outputs.timestamp }}"
           
       - name: Upload backup artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: db-backup-${{ steps.timestamp.outputs.timestamp }}
           path: backups/
