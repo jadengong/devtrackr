@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import StaticPool
 from fastapi.testclient import TestClient
 from dotenv import load_dotenv
+from sqlalchemy import inspect
 
 # Load environment variables from .env file
 load_dotenv()
@@ -33,19 +34,32 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_
 @pytest.fixture(scope="session")
 def db_engine():
     """Create database engine once per test session."""
-    # Drop all tables first to ensure clean state
-    Base.metadata.drop_all(bind=test_engine)
-    # Create all tables
-    Base.metadata.create_all(bind=test_engine)
-    yield test_engine
-    # Drop all tables after all tests
-    Base.metadata.drop_all(bind=test_engine)
+    # Use a fresh database file for each test session
+    import tempfile
+    import os
+    
+    # Create a temporary database file
+    temp_db = tempfile.NamedTemporaryFile(delete=False, suffix='.db')
+    temp_db.close()
+    
+    # Create a new engine with the temporary database
+    from sqlalchemy import create_engine
+    temp_engine = create_engine(f"sqlite:///{temp_db.name}")
+    
+    # Create all tables fresh
+    Base.metadata.create_all(bind=temp_engine)
+    
+    yield temp_engine
+    
+    # Clean up: close engine and remove temp file
+    temp_engine.dispose()
+    os.unlink(temp_db.name)
 
 
 @pytest.fixture(scope="function")
 def db_session(db_engine) -> Generator[Session, None, None]:
     """Create a new database session for each test with automatic rollback."""
-    connection = test_engine.connect()
+    connection = db_engine.connect()
     transaction = connection.begin()
 
     # Create a session bound to the transaction
