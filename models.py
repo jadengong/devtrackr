@@ -115,7 +115,7 @@ class Task(Base):
     __table_args__ = (
         Index("ix_tasks_status_due", "status", "due_date"),
         Index("ix_tasks_owner_status", "owner_id", "status"),
-        Index("ix_tasks_priority", "priority"),
+        # Removed duplicate priority index since priority column has index=True
         Index("ix_tasks_owner_priority", "owner_id", "priority"),
     )
 

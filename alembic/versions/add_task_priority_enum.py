@@ -57,14 +57,14 @@ def upgrade():
     op.alter_column("tasks", "priority_new", new_column_name="priority")
 
     # Create indexes for the new priority column
-    op.create_index("ix_tasks_priority", "tasks", ["priority"])
+    # Note: ix_tasks_priority is now handled automatically by the model column definition
     op.create_index("ix_tasks_owner_priority", "tasks", ["owner_id", "priority"])
 
 
 def downgrade():
     # Drop the new indexes
     op.drop_index("ix_tasks_owner_priority", "tasks")
-    op.drop_index("ix_tasks_priority", "tasks")
+    # Note: ix_tasks_priority is handled automatically by the model, no need to drop it
 
     # Add back the old integer priority column
     op.add_column(

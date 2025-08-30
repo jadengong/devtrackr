@@ -34,27 +34,23 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_
 @pytest.fixture(scope="session")
 def db_engine():
     """Create database engine once per test session."""
-    # Use a fresh database file for each test session
-    import tempfile
-    import os
-
-    # Create a temporary database file
-    temp_db = tempfile.NamedTemporaryFile(delete=False, suffix=".db")
-    temp_db.close()
-
-    # Create a new engine with the temporary database
+    # Use a completely in-memory SQLite database for testing
+    # This ensures no file conflicts and completely fresh state each time
     from sqlalchemy import create_engine
 
-    temp_engine = create_engine(f"sqlite:///{temp_db.name}")
+    # Use :memory: for completely in-memory database
+    temp_engine = create_engine("sqlite:///:memory:")
 
+    # Drop all tables first to avoid index conflicts
+    Base.metadata.drop_all(bind=temp_engine)
+    
     # Create all tables fresh
     Base.metadata.create_all(bind=temp_engine)
 
     yield temp_engine
 
-    # Clean up: close engine and remove temp file
+    # Clean up: close engine (no file to delete for in-memory)
     temp_engine.dispose()
-    os.unlink(temp_db.name)
 
 
 @pytest.fixture(scope="function")
