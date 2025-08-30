@@ -32,6 +32,31 @@ def test_example(client, db_session):
     # Changes are automatically rolled back after each test
 ```
 
+## Coverage Reporting
+
+The project includes comprehensive test coverage reporting:
+
+### Running Tests with Coverage
+```bash
+# Run tests with coverage (default)
+python -m pytest
+
+# Generate HTML coverage report
+python -m pytest --cov-report=html
+
+# Generate XML coverage report (for CI/CD)
+python -m pytest --cov-report=xml
+
+# Check coverage percentage
+python -m pytest --cov-report=term-missing
+```
+
+### Coverage Reports
+- **HTML Report**: Generated in `htmlcov/` directory - open `htmlcov/index.html` in browser
+- **Terminal Report**: Shows missing lines in terminal output
+- **XML Report**: Generated for CI/CD integration
+- **Coverage Threshold**: Tests fail if coverage drops below 80%
+
 ## Database Strategy
 
 - Tables created once at session start, dropped at session end

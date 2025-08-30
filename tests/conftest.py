@@ -33,6 +33,8 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_
 @pytest.fixture(scope="session")
 def db_engine():
     """Create database engine once per test session."""
+    # Drop all tables first to ensure clean state
+    Base.metadata.drop_all(bind=test_engine)
     # Create all tables
     Base.metadata.create_all(bind=test_engine)
     yield test_engine

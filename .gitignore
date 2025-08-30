@@ -27,3 +27,8 @@ Thumbs.db
 *.db
 *.sqlite
 *.sqlite3
+
+# Coverage reports
+htmlcov/
+.coverage
+coverage.xml
