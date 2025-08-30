@@ -44,7 +44,7 @@ def db_engine():
         "sqlite:///:memory:",
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
-        echo=False
+        echo=False,
     )
 
     # Drop all tables first to avoid index conflicts
@@ -124,7 +124,11 @@ def client(db_session, test_user) -> Generator[TestClient, None, None]:
 @pytest.fixture(scope="function")
 def sample_task_data():
     """Provide sample task data for testing."""
-    return {"title": "Test Task", "description": "This is a test task", "priority": "high"}
+    return {
+        "title": "Test Task",
+        "description": "This is a test task",
+        "priority": "high",
+    }
 
 
 @pytest.fixture(scope="function")
@@ -153,14 +157,24 @@ def multiple_tasks(db_session, test_user):
     from models import Task, TaskStatus
 
     tasks = [
-        Task(title="Task 1", status=TaskStatus.todo, priority="low", owner_id=test_user.id),
+        Task(
+            title="Task 1",
+            status=TaskStatus.todo,
+            priority="low",
+            owner_id=test_user.id,
+        ),
         Task(
             title="Task 2",
             status=TaskStatus.in_progress,
             priority="medium",
             owner_id=test_user.id,
         ),
-        Task(title="Task 3", status=TaskStatus.done, priority="high", owner_id=test_user.id),
+        Task(
+            title="Task 3",
+            status=TaskStatus.done,
+            priority="high",
+            owner_id=test_user.id,
+        ),
     ]
 
     for task in tasks:
