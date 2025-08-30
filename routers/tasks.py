@@ -14,6 +14,7 @@ def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
     task = Task(
         title=payload.title,
         description=payload.description,
+        category=payload.category,
         status=TaskStatus(payload.status) if payload.status else TaskStatus.todo,
         priority=payload.priority or 3,
         due_date=payload.due_date,
@@ -26,6 +27,7 @@ def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
 @router.get("", response_model=List[TaskOut])
 def list_tasks(
     status_: Optional[TaskStatus] = Query(None, alias="status"),
+    category: Optional[str] = Query(None, description="Filter by category"),
     due_before: Optional[datetime] = None,
     archived: Optional[bool] = None,
     db: Session = Depends(get_db),
@@ -33,6 +35,8 @@ def list_tasks(
     stmt = select(Task)
     if status_ is not None:
         stmt = stmt.where(Task.status == status_)
+    if category is not None:
+        stmt = stmt.where(Task.category == category)
     if due_before is not None:
         stmt = stmt.where(Task.due_date != None, Task.due_date <= due_before)  # noqa: E711
     if archived is not None:

@@ -15,6 +15,7 @@ class Task(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    category: Mapped[str | None] = mapped_column(String(100), nullable=True, index=True)
 
     status: Mapped[TaskStatus] = mapped_column(
         Enum(TaskStatus, name="task_status"),      # Postgres ENUM type named "task_status"
@@ -43,6 +44,11 @@ class Task(Base):
 
     __table_args__ = (
         Index("ix_tasks_status_due", "status", "due_date"),
+<<<<<<< Updated upstream
+=======
+        Index("ix_tasks_owner_status", "owner_id", "status"),
+        Index("ix_tasks_category", "category"),
+>>>>>>> Stashed changes
     )
 
     def __repr__(self) -> str:

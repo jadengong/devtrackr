@@ -3,6 +3,11 @@ from datetime import datetime, timezone
 from typing import Literal, Optional # Only accepts iso, seconds, for /time, 422 for anything else 
 from pydantic import BaseModel, Field # Parent class for defining data model, and adding extra rules to model fields
 from routers import tasks as task_router
+<<<<<<< Updated upstream
+=======
+from routers import auth as auth_router
+from routers import metrics as metrics_router
+>>>>>>> Stashed changes
 
 # Pydantic Model(s)
 class TaskCreate(BaseModel):
@@ -36,6 +41,7 @@ def _gen_id() -> int:
 # Wire router
 app = FastAPI(title="DevTrackr")
 app.include_router(task_router.router)
+app.include_router(metrics_router.router)
 
 # FastAPI App
 app = FastAPI()
