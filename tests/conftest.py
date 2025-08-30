@@ -25,6 +25,7 @@ test_engine = create_engine(
     TEST_DATABASE_URL,
     poolclass=StaticPool,  # Use static pool for testing
     connect_args={"check_same_thread": False} if "sqlite" in TEST_DATABASE_URL else {},
+    echo=False,  # Disable SQL echo for cleaner test output
 )
 
 # Create test session factory
@@ -38,8 +39,13 @@ def db_engine():
     # This ensures no file conflicts and completely fresh state each time
     from sqlalchemy import create_engine
 
-    # Use :memory: for completely in-memory database
-    temp_engine = create_engine("sqlite:///:memory:")
+    # Use :memory: for completely in-memory database with thread safety
+    temp_engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+        echo=False
+    )
 
     # Drop all tables first to avoid index conflicts
     Base.metadata.drop_all(bind=temp_engine)
@@ -56,6 +62,7 @@ def db_engine():
 @pytest.fixture(scope="function")
 def db_session(db_engine) -> Generator[Session, None, None]:
     """Create a new database session for each test with automatic rollback."""
+    # Create a new connection for each test to avoid threading issues
     connection = db_engine.connect()
     transaction = connection.begin()
 
@@ -117,7 +124,7 @@ def client(db_session, test_user) -> Generator[TestClient, None, None]:
 @pytest.fixture(scope="function")
 def sample_task_data():
     """Provide sample task data for testing."""
-    return {"title": "Test Task", "description": "This is a test task", "priority": 3}
+    return {"title": "Test Task", "description": "This is a test task", "priority": "high"}
 
 
 @pytest.fixture(scope="function")
@@ -129,7 +136,7 @@ def sample_task(db_session, test_user, sample_task_data):
         title=sample_task_data["title"],
         description=sample_task_data["description"],
         status=TaskStatus.todo,
-        priority=3,
+        priority="high",  # Use enum string value
         owner_id=test_user.id,
     )
 
@@ -146,14 +153,14 @@ def multiple_tasks(db_session, test_user):
     from models import Task, TaskStatus
 
     tasks = [
-        Task(title="Task 1", status=TaskStatus.todo, priority=1, owner_id=test_user.id),
+        Task(title="Task 1", status=TaskStatus.todo, priority="low", owner_id=test_user.id),
         Task(
             title="Task 2",
             status=TaskStatus.in_progress,
-            priority=2,
+            priority="medium",
             owner_id=test_user.id,
         ),
-        Task(title="Task 3", status=TaskStatus.done, priority=3, owner_id=test_user.id),
+        Task(title="Task 3", status=TaskStatus.done, priority="high", owner_id=test_user.id),
     ]
 
     for task in tasks:

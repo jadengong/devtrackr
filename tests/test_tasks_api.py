@@ -13,7 +13,7 @@ class TestTasksAPI:
         task_data = {
             "title": "Test Task Title",
             "description": "This is a test task description",
-            "priority": 2,
+            "priority": "high",  # Use enum string value instead of number
         }
 
         # POST /tasks - Create the task
@@ -60,19 +60,19 @@ class TestTasksAPI:
                 "title": "Todo Task",
                 "description": "Task in todo status",
                 "status": "todo",
-                "priority": 3,
+                "priority": "urgent",  # Use enum string value
             },
             {
                 "title": "In Progress Task",
                 "description": "Task in progress",
                 "status": "in_progress",
-                "priority": 2,
+                "priority": "high",  # Use enum string value
             },
             {
                 "title": "Done Task",
                 "description": "Completed task",
                 "status": "done",
-                "priority": 1,
+                "priority": "low",  # Use enum string value
             },
         ]
 
