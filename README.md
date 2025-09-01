@@ -1,6 +1,6 @@
-# DevTrackr
+# DevTrackr API
 
-A comprehensive task management API built with FastAPI, featuring user authentication, task priorities, and analytics.
+A comprehensive task management API built with FastAPI, featuring user authentication, task priorities, and analytics. This is a backend-only project that provides a robust REST API for task management.
 
 ## 🚀 **CI/CD Pipeline Status**
 
@@ -69,14 +69,7 @@ This project now includes a complete CI/CD pipeline with:
    uvicorn main:app --host 0.0.0.0 --port 8000 --reload
    ```
 
-6. **Verify the application is running**
-   ```bash
-   # Test the health endpoint
-   curl http://localhost:8000/health
-   # Or visit in your browser: http://localhost:8000/health
-   ```
-
-7. **Access the API**
+6. **Access the API**
    - **API Documentation (Swagger UI)**: http://localhost:8000/docs
    - **Alternative API Docs (ReDoc)**: http://localhost:8000/redoc
    - **Health Check**: http://localhost:8000/health
