@@ -20,36 +20,109 @@ This project now includes a complete CI/CD pipeline with:
 
 ## 🚀 **Quick Start**
 
+### **Prerequisites**
+- Python 3.8 or higher
+- Docker and Docker Compose (for database)
+- Git
+
+### **Step-by-Step Setup**
+
 1. **Clone the repository**
    ```bash
    git clone https://github.com/yourusername/devtrackr-repo.git
    cd devtrackr-repo
    ```
 
-2. **Set up environment**
+2. **Start the PostgreSQL database**
    ```bash
-   # Create virtual environment
+   # Start PostgreSQL using Docker Compose
+   docker-compose up -d db
+   
+   # Verify database is running
+   docker ps
+   ```
+
+3. **Set up Python environment**
+   ```bash
+   # Create virtual environment (recommended)
    python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   
+   # Activate virtual environment
+   # On Windows:
+   venv\Scripts\activate
+   # On macOS/Linux:
+   source venv/bin/activate
    
    # Install dependencies
    pip install -r requirements.txt
    ```
 
-3. **Database setup**
+4. **Initialize the database**
    ```bash
-   # Run migrations
+   # Run database migrations
    python -m alembic upgrade head
    ```
 
-4. **Start the API**
+5. **Start the FastAPI application**
    ```bash
-   python main.py
+   # Start the development server
+   uvicorn main:app --host 0.0.0.0 --port 8000 --reload
    ```
 
-5. **Access the API**
-   - **API Documentation**: http://localhost:8000/docs
+6. **Verify the application is running**
+   ```bash
+   # Test the health endpoint
+   curl http://localhost:8000/health
+   # Or visit in your browser: http://localhost:8000/health
+   ```
+
+7. **Access the API**
+   - **API Documentation (Swagger UI)**: http://localhost:8000/docs
+   - **Alternative API Docs (ReDoc)**: http://localhost:8000/redoc
    - **Health Check**: http://localhost:8000/health
+   - **Root Endpoint**: http://localhost:8000/
+
+### **Troubleshooting**
+
+- **Database connection issues**: Ensure Docker is running and the database container is healthy
+- **Port already in use**: Change the port with `--port 8001` or stop the service using port 8000
+- **Migration errors**: Check that the database is running and accessible
+- **Import errors**: Ensure all dependencies are installed with `pip install -r requirements.txt`
+
+### **Environment Variables**
+
+The application uses the following environment variables (with defaults):
+
+```bash
+# Database Configuration
+DATABASE_URL=postgresql+psycopg2://dev:dev@localhost:5432/devtrackr
+POSTGRES_USER=dev
+POSTGRES_PASSWORD=dev
+POSTGRES_DB=devtrackr
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+
+# JWT Configuration
+SECRET_KEY=your-secret-key-here
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+```
+
+### **Alternative Startup Methods**
+
+**Using Python directly (not recommended for development):**
+```bash
+python main.py
+```
+
+**Using uvicorn with custom settings:**
+```bash
+# Development with auto-reload
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+# Production settings
+uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+```
 
 ## 🧪 **Testing**
 
@@ -60,17 +133,51 @@ python run_tests.py
 
 ## 🐳 **Docker**
 
-Build and run with Docker:
+### **Development with Docker Compose (Recommended)**
+
+The easiest way to run the entire application stack:
+
 ```bash
-# Build image
+# Start both database and application
+docker-compose up
+
+# Or run in background
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+```
+
+### **Production Docker Build**
+
+Build and run the application container:
+
+```bash
+# Build the application image
 docker build -t devtrackr .
 
-# Run container
+# Run the container
 docker run -d -p 8000:8000 --name devtrackr-api devtrackr
 
 # Check health
 curl http://localhost:8000/health
+
+# View logs
+docker logs devtrackr-api
+
+# Stop container
+docker stop devtrackr-api
 ```
+
+### **Docker Compose for Full Stack**
+
+The `docker-compose.yml` file includes:
+- PostgreSQL database with persistent storage
+- Health checks for database readiness
+- Proper networking between services
 
 ## 📊 **Features**
 
