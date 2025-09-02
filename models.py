@@ -1,7 +1,6 @@
 import enum
 from datetime import datetime
 from sqlalchemy import (
-    Column,
     Integer,
     String,
     Text,
@@ -11,6 +10,7 @@ from sqlalchemy import (
     Index,
     func,
     ForeignKey,
+    JSON,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from db import Base  # adjust import if db.py is in a package
@@ -140,7 +140,7 @@ class TimeEntry(Base):
         Integer, ForeignKey("tasks.id"), nullable=False, index=True
     )
     task: Mapped[Task] = relationship("Task")
-    
+
     # Time tracking fields
     start_time: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, index=True
@@ -156,17 +156,17 @@ class TimeEntry(Base):
         server_default=TimeEntryStatus.active.value,
         index=True,
     )
-    
+
     # Additional tracking
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     category: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    
+
     # User relationship (through task)
     owner_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("users.id"), nullable=False, index=True
     )
     owner: Mapped[User] = relationship("User")
-    
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,

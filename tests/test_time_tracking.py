@@ -20,11 +20,11 @@ class TestTimeTrackingAPI:
         timer_data = {
             "task_id": task_id,
             "description": "Working on the task",
-            "category": "development"
+            "category": "development",
         }
         response = client.post("/time/start", json=timer_data)
         assert response.status_code == status.HTTP_201_CREATED
-        
+
         time_entry = response.json()
         assert time_entry["task_id"] == task_id
         assert time_entry["description"] == "Working on the task"
@@ -49,7 +49,7 @@ class TestTimeTrackingAPI:
         # Get active timer
         response = client.get("/time/active")
         assert response.status_code == status.HTTP_200_OK
-        
+
         active_timer = response.json()
         assert active_timer is not None
         assert active_timer["time_entry_id"] == time_entry_id
@@ -70,13 +70,10 @@ class TestTimeTrackingAPI:
         time_entry_id = response.json()["id"]
 
         # Stop timer
-        stop_data = {
-            "description": "Finished working",
-            "category": "testing"
-        }
+        stop_data = {"description": "Finished working", "category": "testing"}
         response = client.post(f"/time/stop/{time_entry_id}", json=stop_data)
         assert response.status_code == status.HTTP_200_OK
-        
+
         time_entry = response.json()
         assert time_entry["id"] == time_entry_id
         assert time_entry["status"] == TimeEntryStatus.completed
@@ -97,10 +94,10 @@ class TestTimeTrackingAPI:
         # Create two tasks
         task1_data = {"title": "Task 1"}
         task2_data = {"title": "Task 2"}
-        
+
         response1 = client.post("/tasks", json=task1_data)
         response2 = client.post("/tasks", json=task2_data)
-        
+
         task1_id = response1.json()["id"]
         task2_id = response2.json()["id"]
 
@@ -126,14 +123,14 @@ class TestTimeTrackingAPI:
         timer_data = {"task_id": task_id, "category": "development"}
         response = client.post("/time/start", json=timer_data)
         time_entry_id = response.json()["id"]
-        
+
         response = client.post(f"/time/stop/{time_entry_id}")
         assert response.status_code == status.HTTP_200_OK
 
         # List time entries
         response = client.get("/time/entries")
         assert response.status_code == status.HTTP_200_OK
-        
+
         entries = response.json()
         assert len(entries) == 1
         assert entries[0]["task_id"] == task_id
@@ -150,14 +147,14 @@ class TestTimeTrackingAPI:
         timer_data = {"task_id": task_id, "category": "testing"}
         response = client.post("/time/start", json=timer_data)
         time_entry_id = response.json()["id"]
-        
+
         response = client.post(f"/time/stop/{time_entry_id}")
         assert response.status_code == status.HTTP_200_OK
 
         # Get summary
         response = client.get("/time/summary")
         assert response.status_code == status.HTTP_200_OK
-        
+
         summary = response.json()
         assert summary["total_time_minutes"] >= 0
         assert summary["total_entries"] == 1

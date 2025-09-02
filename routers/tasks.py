@@ -157,7 +157,7 @@ def start_task_timer(
     # Redirect to new time tracking system
     from routers.time_tracking import start_timer
     from schemas import TimerStart
-    
+
     timer_data = TimerStart(task_id=task_id)
     return start_timer(timer_data, db, current_user)
 
