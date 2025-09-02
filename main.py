@@ -27,6 +27,6 @@ def health_check():
     return {
         "status": "healthy",
         "service": "DevTrackr API",
-        "version": "1.0.1",
+        "version": "1.0.2",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
