@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from routers import tasks as task_router
 from routers import auth as auth_router
 from routers import metrics as metrics_router
+from routers import time_tracking as time_router
 from datetime import datetime, timezone
 
 # Create FastAPI app
@@ -11,6 +12,7 @@ app = FastAPI(title="DevTrackr")
 app.include_router(task_router.router)
 app.include_router(auth_router.router)
 app.include_router(metrics_router.router)
+app.include_router(time_router.router)
 
 
 # Root endpoint

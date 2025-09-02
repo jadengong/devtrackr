@@ -144,7 +144,7 @@ def start_task_timer(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    """Start timing a task (placeholder for future timer functionality)."""
+    """Start timing a task (redirects to new time tracking system)."""
     task = db.get(Task, task_id)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -154,8 +154,12 @@ def start_task_timer(
             status_code=403, detail="Not authorized to access this task"
         )
 
-    # TODO: Implement actual timer functionality
-    return {"message": "Timer started for task", "task_id": task_id}
+    # Redirect to new time tracking system
+    from routers.time_tracking import start_timer
+    from schemas import TimerStart
+    
+    timer_data = TimerStart(task_id=task_id)
+    return start_timer(timer_data, db, current_user)
 
 
 @router.post("/{task_id}/stop-timer")
@@ -165,7 +169,7 @@ def stop_task_timer(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    """Stop timing a task and record time spent."""
+    """Stop timing a task and record time spent (legacy endpoint)."""
     task = db.get(Task, task_id)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -175,7 +179,7 @@ def stop_task_timer(
             status_code=403, detail="Not authorized to access this task"
         )
 
-    # Update actual time spent
+    # Update actual time spent (legacy behavior)
     if task.actual_minutes is None:
         task.actual_minutes = minutes_spent
     else:
@@ -186,7 +190,7 @@ def stop_task_timer(
     db.refresh(task)
 
     return {
-        "message": "Timer stopped",
+        "message": "Timer stopped (legacy endpoint - consider using /time/stop/{time_entry_id})",
         "task_id": task_id,
         "total_minutes": task.actual_minutes,
     }
