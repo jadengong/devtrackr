@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import os
 from routers import tasks as task_router
 from routers import auth as auth_router
 from routers import metrics as metrics_router
@@ -8,6 +10,9 @@ from datetime import datetime, timezone
 # Create FastAPI app
 app = FastAPI(title="DevTrackr")
 
+# Centralized API version
+API_VERSION = "1.0.2"
+
 # Include routers
 app.include_router(task_router.router)
 app.include_router(auth_router.router)
@@ -16,6 +21,18 @@ app.include_router(time_router.router)
 
 # Track application start time for readiness metrics
 START_TIME = datetime.now(timezone.utc)
+
+# Configure CORS via env: CORS_ORIGINS=domain1,domain2 or "*"
+_origins_env = os.getenv("CORS_ORIGINS", "*")
+ALLOWED_ORIGINS = [o.strip() for o in _origins_env.split(",") if o.strip()]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"] if ALLOWED_ORIGINS == ["*"] else ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # Root endpoint
@@ -30,7 +47,7 @@ def health_check():
     return {
         "status": "healthy",
         "service": "DevTrackr API",
-        "version": "1.0.2",
+        "version": API_VERSION,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -49,3 +66,9 @@ def readiness_probe():
         "status": "ready",
         "uptime_seconds": uptime_seconds,
     }
+
+
+# Version endpoint
+@app.get("/version")
+def version():
+    return {"version": API_VERSION}
