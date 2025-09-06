@@ -1,6 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 import os
+import uuid
+import logging
 from routers import tasks as task_router
 from routers import auth as auth_router
 from routers import metrics as metrics_router
@@ -9,6 +11,10 @@ from datetime import datetime, timezone
 
 # Create FastAPI app
 app = FastAPI(title="DevTrackr")
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Centralized API version
 API_VERSION = "1.0.2"
@@ -33,6 +39,20 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Request ID middleware
+@app.middleware("http")
+async def add_request_id(request: Request, call_next):
+    request_id = str(uuid.uuid4())[:8]
+    request.state.request_id = request_id
+    
+    logger.info(f"Request {request_id}: {request.method} {request.url}")
+    
+    response = await call_next(request)
+    response.headers["X-Request-ID"] = request_id
+    
+    logger.info(f"Request {request_id}: {response.status_code}")
+    return response
 
 
 # Root endpoint
