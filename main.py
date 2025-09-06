@@ -40,17 +40,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Request ID middleware
 @app.middleware("http")
 async def add_request_id(request: Request, call_next):
     request_id = str(uuid.uuid4())[:8]
     request.state.request_id = request_id
-    
+
     logger.info(f"Request {request_id}: {request.method} {request.url}")
-    
+
     response = await call_next(request)
     response.headers["X-Request-ID"] = request_id
-    
+
     logger.info(f"Request {request_id}: {response.status_code}")
     return response
 
