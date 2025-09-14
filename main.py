@@ -10,16 +10,22 @@ from routers import auth as auth_router
 from routers import metrics as metrics_router
 from routers import time_tracking as time_router
 from datetime import datetime, timezone
+from config import Config
+from middleware import RequestTimingMiddleware, SecurityHeadersMiddleware
 
 # Create FastAPI app
-app = FastAPI(title="DevTrackr")
+app = FastAPI(
+    title=Config.API_TITLE,
+    description=Config.API_DESCRIPTION,
+    version=Config.API_VERSION
+)
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=getattr(logging, Config.LOG_LEVEL.upper()))
 logger = logging.getLogger(__name__)
 
-# Centralized API version
-API_VERSION = "1.0.2"
+# Use config for API version
+API_VERSION = Config.API_VERSION
 
 
 # Custom exception classes
@@ -70,13 +76,14 @@ app.include_router(time_router.router)
 # Track application start time for readiness metrics
 START_TIME = datetime.now(timezone.utc)
 
-# Configure CORS via env: CORS_ORIGINS=domain1,domain2 or "*"
-_origins_env = os.getenv("CORS_ORIGINS", "*")
-ALLOWED_ORIGINS = [o.strip() for o in _origins_env.split(",") if o.strip()]
+# Add custom middleware
+app.add_middleware(RequestTimingMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
 
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if ALLOWED_ORIGINS == ["*"] else ALLOWED_ORIGINS,
+    allow_origins=Config.get_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -221,6 +228,30 @@ def readiness_probe():
 @app.get("/version")
 def version():
     return {"version": API_VERSION}
+
+
+# Utility demo endpoint
+@app.get("/utils/demo")
+def utils_demo():
+    """Demo endpoint showcasing utility functions"""
+    from utils import generate_slug, format_duration, is_valid_email, get_current_timestamp, truncate_string
+    
+    return {
+        "utilities_demo": {
+            "slug_example": generate_slug("Hello World! This is a test."),
+            "duration_examples": {
+                "30_seconds": format_duration(30),
+                "90_seconds": format_duration(90),
+                "3661_seconds": format_duration(3661)
+            },
+            "email_validation": {
+                "valid_email": is_valid_email("test@example.com"),
+                "invalid_email": is_valid_email("not-an-email")
+            },
+            "current_timestamp": get_current_timestamp(),
+            "truncation_example": truncate_string("This is a very long string that should be truncated", 20)
+        }
+    }
 
 
 # Test endpoint for error handling demonstration

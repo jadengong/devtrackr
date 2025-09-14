@@ -4,5 +4,6 @@
 from . import auth
 from . import tasks
 from . import metrics
+from . import time_tracking
 
-__all__ = ["auth", "tasks", "metrics"]
+__all__ = ["auth", "tasks", "metrics", "time_tracking"]
