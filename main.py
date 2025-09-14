@@ -95,6 +95,7 @@ async def devtrackr_exception_handler(request: Request, exc: DevTrackrException)
     return JSONResponse(
         status_code=exc.status_code,
         content={
+            "detail": exc.message,
             "error": {
                 "type": exc.__class__.__name__,
                 "message": exc.message,
@@ -115,6 +116,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
         status_code=exc.status_code,
         content={
+            "detail": exc.detail,
             "error": {
                 "type": "HTTPException",
                 "message": exc.detail,
@@ -135,6 +137,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     return JSONResponse(
         status_code=422,
         content={
+            "detail": exc.errors(),
             "error": {
                 "type": "ValidationError",
                 "message": "Request validation failed",
@@ -155,6 +158,7 @@ async def general_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
         status_code=500,
         content={
+            "detail": "An unexpected error occurred",
             "error": {
                 "type": "InternalServerError",
                 "message": "An unexpected error occurred",
