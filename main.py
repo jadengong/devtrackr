@@ -230,6 +230,23 @@ def version():
     return {"version": API_VERSION}
 
 
+# Informational endpoint
+@app.get("/info")
+def info():
+    """Basic runtime and configuration info (non-sensitive)."""
+    uptime_seconds = int((datetime.now(timezone.utc) - START_TIME).total_seconds())
+    return {
+        "service": Config.API_TITLE,
+        "version": API_VERSION,
+        "environment": "production" if Config.is_production() else "development",
+        "features": {
+            "metrics": Config.ENABLE_METRICS,
+            "time_tracking": Config.ENABLE_TIME_TRACKING,
+        },
+        "uptime_seconds": uptime_seconds,
+    }
+
+
 # Utility demo endpoint
 @app.get("/utils/demo")
 def utils_demo():
