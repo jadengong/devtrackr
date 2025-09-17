@@ -273,3 +273,9 @@ def get_productivity_trends(
             ),
         },
     }
+
+
+@router.get("/ping")
+def ping():
+    """Lightweight liveness check for the metrics router."""
+    return {"status": "ok"}
