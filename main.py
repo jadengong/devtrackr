@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 import os
 import uuid
 import logging
+import random
 from routers import tasks as task_router
 from routers import auth as auth_router
 from routers import metrics as metrics_router
@@ -268,6 +269,31 @@ def utils_demo():
             "current_timestamp": get_current_timestamp(),
             "truncation_example": truncate_string("This is a very long string that should be truncated", 20)
         }
+    }
+
+
+# Motivational quote endpoint for developers
+@app.get("/quote")
+def get_developer_quote():
+    """Get a random motivational quote for developers"""
+    quotes = [
+        "Code is like humor. When you have to explain it, it's bad.",
+        "First, solve the problem. Then, write the code.",
+        "Experience is the name everyone gives to their mistakes.",
+        "Perfection is achieved not when there is nothing more to add, but when there is nothing left to take away.",
+        "The best error message is the one that never shows up.",
+        "Code never lies, comments sometimes do.",
+        "It's not a bug; it's an undocumented feature.",
+        "The only way to go fast, is to go well.",
+        "Clean code always looks like it was written by someone who cares.",
+        "Simplicity is the ultimate sophistication."
+    ]
+    
+    selected_quote = random.choice(quotes)
+    return {
+        "quote": selected_quote,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "source": "DevTrackr API"
     }
 
 
