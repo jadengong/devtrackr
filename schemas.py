@@ -91,6 +91,28 @@ class TaskListResponse(BaseModel):
     total_count: Optional[int] = None
 
 
+# Search Schemas
+class TaskSearchResponse(BaseModel):
+    """Search results response"""
+    items: List[TaskOut]
+    query: str
+    total_matches: int
+    search_time_ms: float
+    suggestions: Optional[List[str]] = None
+
+
+class SearchFilters(BaseModel):
+    """Search filters"""
+    status: Optional[TaskStatus] = None
+    category: Optional[str] = None
+    priority: Optional[TaskPriority] = None
+    created_after: Optional[datetime] = None
+    created_before: Optional[datetime] = None
+    due_after: Optional[datetime] = None
+    due_before: Optional[datetime] = None
+    archived: Optional[bool] = None
+
+
 # Metrics Schemas
 class TaskMetrics(BaseModel):
     total_tasks: int

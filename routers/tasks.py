@@ -1,12 +1,14 @@
 from typing import List, Optional
 from datetime import datetime
+import time
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
-from sqlalchemy import select, and_, or_, func
+from sqlalchemy import select, and_, or_, func, text
 from models import Task, TaskStatus, TaskPriority, User
-from schemas import TaskCreate, TaskUpdate, TaskOut, TaskListResponse
+from schemas import TaskCreate, TaskUpdate, TaskOut, TaskListResponse, TaskSearchResponse, SearchFilters
 from deps import get_db, get_current_active_user
 from pagination import create_task_cursor, get_pagination_params
+from search_utils import build_search_query, get_search_suggestions, normalize_search_query, calculate_search_stats
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
@@ -126,6 +128,116 @@ def list_tasks(
         has_next=has_next,
         total_count=total_count
     )
+
+
+@router.get("/search", response_model=TaskSearchResponse)
+def search_tasks(
+    q: str = Query(..., min_length=1, max_length=200, description="Search query"),
+    limit: int = Query(20, ge=1, le=100, description="Number of results to return"),
+    status_: Optional[TaskStatus] = Query(None, alias="status", description="Filter by status"),
+    category: Optional[str] = Query(None, description="Filter by category"),
+    priority: Optional[TaskPriority] = Query(None, description="Filter by priority"),
+    created_after: Optional[datetime] = Query(None, description="Filter tasks created after this date"),
+    created_before: Optional[datetime] = Query(None, description="Filter tasks created before this date"),
+    due_after: Optional[datetime] = Query(None, description="Filter tasks due after this date"),
+    due_before: Optional[datetime] = Query(None, description="Filter tasks due before this date"),
+    archived: Optional[bool] = Query(None, description="Filter by archived status"),
+    include_suggestions: bool = Query(True, description="Include search suggestions"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    """Search tasks using full-text search across titles and descriptions."""
+    
+    start_time = time.time()
+    
+    # Normalize search query
+    normalized_query = normalize_search_query(q)
+    if not normalized_query:
+        raise HTTPException(
+            status_code=400,
+            detail="Search query cannot be empty or contain only special characters"
+        )
+    
+    # Build search filters
+    filters = SearchFilters(
+        status=status_,
+        category=category,
+        priority=priority,
+        created_after=created_after,
+        created_before=created_before,
+        due_after=due_after,
+        due_before=due_before,
+        archived=archived
+    )
+    
+    # Build the search query
+    search_sql, params = build_search_query(normalized_query, filters, current_user.id)
+    
+    # Add limit to the query
+    search_sql += f" LIMIT {limit + 1}"  # Get one extra to check if there are more results
+    
+    # Execute search query
+    try:
+        result = db.execute(text(search_sql), params)
+        tasks = result.fetchall()
+        
+        # Check if there are more results
+        has_more = len(tasks) > limit
+        if has_more:
+            tasks = tasks[:limit]  # Remove the extra item
+        
+        # Convert to Task objects
+        task_objects = []
+        for row in tasks:
+            # Create Task object from row data
+            task = Task(
+                id=row.id,
+                title=row.title,
+                description=row.description,
+                category=row.category,
+                status=TaskStatus(row.status),
+                priority=TaskPriority(row.priority),
+                due_date=row.due_date,
+                estimated_minutes=row.estimated_minutes,
+                actual_minutes=row.actual_minutes,
+                is_archived=row.is_archived,
+                owner_id=row.owner_id,
+                created_at=row.created_at,
+                updated_at=row.updated_at
+            )
+            task_objects.append(task)
+        
+        # Get total count for the search (without limit)
+        count_sql = search_sql.replace(
+            "SELECT t.*, ts_rank(to_tsvector('english', t.title || ' ' || COALESCE(t.description, '')), plainto_tsquery('english', :query)) as rank",
+            "SELECT COUNT(*) as total"
+        ).split("ORDER BY")[0] + "LIMIT 1"
+        
+        count_result = db.execute(text(count_sql), params)
+        total_matches = count_result.scalar() or 0
+        
+        # Get search suggestions if requested
+        suggestions = None
+        if include_suggestions:
+            suggestions = get_search_suggestions(db, current_user.id, normalized_query)
+        
+        # Calculate search statistics
+        search_stats = calculate_search_stats(start_time, total_matches, normalized_query)
+        
+        return TaskSearchResponse(
+            items=task_objects,
+            query=normalized_query,
+            total_matches=total_matches,
+            search_time_ms=search_stats["search_time_ms"],
+            suggestions=suggestions
+        )
+        
+    except Exception as e:
+        # Log the error and return a user-friendly message
+        raise HTTPException(
+            status_code=500,
+            detail="Search failed. Please try a different query or contact support."
+        )
 
 
 @router.get("/{task_id}", response_model=TaskOut)

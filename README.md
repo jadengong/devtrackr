@@ -174,13 +174,16 @@ The `docker-compose.yml` file includes:
 
 ## 📊 **Features**
 
-- **Task Management**: Create, read, update, delete tasks
+- **Task Management**: Create, read, update, delete tasks with full CRUD operations
+- **Full-Text Search**: Powerful search across task titles and descriptions with relevance ranking
+- **Cursor-Based Pagination**: Efficient pagination for large task datasets
 - **User Authentication**: JWT-based secure authentication
 - **Task Priorities**: Low, Medium, High, Urgent priority levels
-- **Time Tracking**: Estimate and track actual time spent
+- **Time Tracking**: Estimate and track actual time spent with detailed analytics
 - **Analytics**: Comprehensive metrics and productivity insights
 - **Categories**: Organize tasks by category
 - **Archiving**: Soft delete functionality
+- **Advanced Filtering**: Filter tasks by status, category, priority, and date ranges
 
 ## 🔧 **API Endpoints**
 
@@ -190,7 +193,8 @@ The `docker-compose.yml` file includes:
 - `GET /auth/me` - Get current user
 
 ### **Tasks**
-- `GET /tasks` - List user's tasks
+- `GET /tasks` - List user's tasks (with pagination and filtering)
+- `GET /tasks/search` - Full-text search across tasks
 - `POST /tasks` - Create new task
 - `GET /tasks/{task_id}` - Get specific task
 - `PATCH /tasks/{task_id}` - Update task
@@ -205,6 +209,31 @@ The `docker-compose.yml` file includes:
 
 ### **Health**
 - `GET /health` - API health status
+
+## 🔍 **Search Examples**
+
+DevTrackr includes powerful full-text search capabilities:
+
+```bash
+# Basic search
+GET /tasks/search?q=API documentation
+
+# Search with filters
+GET /tasks/search?q=review&status=todo&priority=high
+
+# Search with date filters
+GET /tasks/search?q=deadline&due_after=2024-01-01&due_before=2024-12-31
+
+# Search with suggestions
+GET /tasks/search?q=doc&include_suggestions=true
+```
+
+**Search Features:**
+- **Relevance ranking** - most relevant results first
+- **Advanced filtering** - combine search with status, category, priority filters
+- **Search suggestions** - get suggestions based on existing content
+- **Performance optimized** - uses PostgreSQL GIN indexes
+- **Query normalization** - handles special characters automatically
 
 ## 🚀 **CI/CD Pipeline**
 
