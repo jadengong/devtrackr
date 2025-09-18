@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field, EmailStr
 from models import TaskStatus, TaskPriority, TimeEntryStatus
 
@@ -80,6 +80,15 @@ class TaskOut(TaskBase):
 
     class Config:
         from_attributes = True
+
+
+# Pagination Schemas
+class TaskListResponse(BaseModel):
+    """Paginated task list response"""
+    items: List[TaskOut]
+    next_cursor: Optional[str] = None
+    has_next: bool = False
+    total_count: Optional[int] = None
 
 
 # Metrics Schemas
