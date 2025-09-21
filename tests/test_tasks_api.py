@@ -87,14 +87,15 @@ class TestTasksAPI:
         # GET /tasks - List all tasks
         response = client.get("/tasks")
         assert response.status_code == status.HTTP_200_OK
-        all_tasks = response.json()
+        tasks_response = response.json()
 
-        # Assert we have 3 tasks
-        assert len(all_tasks) == 3
+        # Assert we have 3 tasks in the paginated response
+        assert len(tasks_response["items"]) == 3
+        assert tasks_response["has_next"] is False
 
         # Verify all created tasks are in the list
         created_ids = {task["id"] for task in created_tasks}
-        listed_ids = {task["id"] for task in all_tasks}
+        listed_ids = {task["id"] for task in tasks_response["items"]}
         assert created_ids == listed_ids
 
         # PATCH one task to update status and priority
@@ -180,13 +181,13 @@ class TestTasksAPI:
         # Filter by todo status
         response = client.get("/tasks?status=todo")
         assert response.status_code == status.HTTP_200_OK
-        todo_tasks = response.json()
-        assert len(todo_tasks) == 1
-        assert all(task["status"] == "todo" for task in todo_tasks)
+        todo_response = response.json()
+        assert len(todo_response["items"]) == 1
+        assert all(task["status"] == "todo" for task in todo_response["items"])
 
         # Filter by in_progress status
         response = client.get("/tasks?status=in_progress")
         assert response.status_code == status.HTTP_200_OK
-        in_progress_tasks = response.json()
-        assert len(in_progress_tasks) == 1
-        assert all(task["status"] == "in_progress" for task in in_progress_tasks)
+        in_progress_response = response.json()
+        assert len(in_progress_response["items"]) == 1
+        assert all(task["status"] == "in_progress" for task in in_progress_response["items"])
