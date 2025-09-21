@@ -5,10 +5,22 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from sqlalchemy import select, and_, or_, func, text
 from models import Task, TaskStatus, TaskPriority, User
-from schemas import TaskCreate, TaskUpdate, TaskOut, TaskListResponse, TaskSearchResponse, SearchFilters
+from schemas import (
+    TaskCreate,
+    TaskUpdate,
+    TaskOut,
+    TaskListResponse,
+    TaskSearchResponse,
+    SearchFilters,
+)
 from deps import get_db, get_current_active_user
 from pagination import create_task_cursor, get_pagination_params
-from search_utils import build_search_query, get_search_suggestions, normalize_search_query, calculate_search_stats
+from search_utils import (
+    build_search_query,
+    get_search_suggestions,
+    normalize_search_query,
+    calculate_search_stats,
+)
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
@@ -45,30 +57,30 @@ def list_tasks(
     category: Optional[str] = Query(None, description="Filter by category"),
     due_before: Optional[datetime] = None,
     archived: Optional[bool] = None,
-    include_total: bool = Query(False, description="Include total count (expensive for large datasets)"),
+    include_total: bool = Query(
+        False, description="Include total count (expensive for large datasets)"
+    ),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
     """List tasks for the current user with cursor-based pagination and optional filters."""
-    
+
     # Parse pagination parameters
     cursor_id, cursor_created_at, limit = get_pagination_params(cursor, limit)
-    
+
     # Build base query
     stmt = select(Task).where(Task.owner_id == current_user.id)
-    
+
     # Apply filters
     if status_ is not None:
         stmt = stmt.where(Task.status == status_)
     if category is not None:
         stmt = stmt.where(Task.category == category)
     if due_before is not None:
-        stmt = stmt.where(
-            Task.due_date.isnot(None), Task.due_date <= due_before
-        )
+        stmt = stmt.where(Task.due_date.isnot(None), Task.due_date <= due_before)
     if archived is not None:
         stmt = stmt.where(Task.is_archived == archived)
-    
+
     # Apply cursor-based pagination
     if cursor_id and cursor_created_at:
         # For cursor pagination, we need to handle the case where multiple tasks
@@ -76,38 +88,35 @@ def list_tasks(
         stmt = stmt.where(
             or_(
                 Task.created_at < cursor_created_at,
-                and_(
-                    Task.created_at == cursor_created_at,
-                    Task.id < cursor_id
-                )
+                and_(Task.created_at == cursor_created_at, Task.id < cursor_id),
             )
         )
-    
+
     # Order by created_at desc, then by id desc for consistent pagination
     stmt = stmt.order_by(Task.created_at.desc(), Task.id.desc())
-    
+
     # Get one extra item to determine if there's a next page
     stmt = stmt.limit(limit + 1)
-    
+
     # Execute query
     tasks = db.execute(stmt).scalars().all()
-    
+
     # Check if there are more items
     has_next = len(tasks) > limit
     if has_next:
         tasks = tasks[:limit]  # Remove the extra item
-    
+
     # Create next cursor if there are more items
     next_cursor = None
     if has_next and tasks:
         last_task = tasks[-1]
         next_cursor = create_task_cursor(last_task.id, last_task.created_at)
-    
+
     # Get total count if requested (expensive for large datasets)
     total_count = None
     if include_total:
         count_stmt = select(func.count(Task.id)).where(Task.owner_id == current_user.id)
-        
+
         # Apply the same filters as the main query
         if status_ is not None:
             count_stmt = count_stmt.where(Task.status == status_)
@@ -119,14 +128,11 @@ def list_tasks(
             )
         if archived is not None:
             count_stmt = count_stmt.where(Task.is_archived == archived)
-        
+
         total_count = db.execute(count_stmt).scalar()
-    
+
     return TaskListResponse(
-        items=tasks,
-        next_cursor=next_cursor,
-        has_next=has_next,
-        total_count=total_count
+        items=tasks, next_cursor=next_cursor, has_next=has_next, total_count=total_count
     )
 
 
@@ -134,30 +140,40 @@ def list_tasks(
 def search_tasks(
     q: str = Query(..., min_length=1, max_length=200, description="Search query"),
     limit: int = Query(20, ge=1, le=100, description="Number of results to return"),
-    status_: Optional[TaskStatus] = Query(None, alias="status", description="Filter by status"),
+    status_: Optional[TaskStatus] = Query(
+        None, alias="status", description="Filter by status"
+    ),
     category: Optional[str] = Query(None, description="Filter by category"),
     priority: Optional[TaskPriority] = Query(None, description="Filter by priority"),
-    created_after: Optional[datetime] = Query(None, description="Filter tasks created after this date"),
-    created_before: Optional[datetime] = Query(None, description="Filter tasks created before this date"),
-    due_after: Optional[datetime] = Query(None, description="Filter tasks due after this date"),
-    due_before: Optional[datetime] = Query(None, description="Filter tasks due before this date"),
+    created_after: Optional[datetime] = Query(
+        None, description="Filter tasks created after this date"
+    ),
+    created_before: Optional[datetime] = Query(
+        None, description="Filter tasks created before this date"
+    ),
+    due_after: Optional[datetime] = Query(
+        None, description="Filter tasks due after this date"
+    ),
+    due_before: Optional[datetime] = Query(
+        None, description="Filter tasks due before this date"
+    ),
     archived: Optional[bool] = Query(None, description="Filter by archived status"),
     include_suggestions: bool = Query(True, description="Include search suggestions"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
     """Search tasks using full-text search across titles and descriptions."""
-    
+
     start_time = time.time()
-    
+
     # Normalize search query
     normalized_query = normalize_search_query(q)
     if not normalized_query:
         raise HTTPException(
             status_code=400,
-            detail="Search query cannot be empty or contain only special characters"
+            detail="Search query cannot be empty or contain only special characters",
         )
-    
+
     # Build search filters
     filters = SearchFilters(
         status=status_,
@@ -167,25 +183,27 @@ def search_tasks(
         created_before=created_before,
         due_after=due_after,
         due_before=due_before,
-        archived=archived
+        archived=archived,
     )
-    
+
     # Build the search query
     search_sql, params = build_search_query(normalized_query, filters, current_user.id)
-    
+
     # Add limit to the query
-    search_sql += f" LIMIT {limit + 1}"  # Get one extra to check if there are more results
-    
+    search_sql += (
+        f" LIMIT {limit + 1}"  # Get one extra to check if there are more results
+    )
+
     # Execute search query
     try:
         result = db.execute(text(search_sql), params)
         tasks = result.fetchall()
-        
+
         # Check if there are more results
         has_more = len(tasks) > limit
         if has_more:
             tasks = tasks[:limit]  # Remove the extra item
-        
+
         # Convert to Task objects
         task_objects = []
         for row in tasks:
@@ -203,40 +221,45 @@ def search_tasks(
                 is_archived=row.is_archived,
                 owner_id=row.owner_id,
                 created_at=row.created_at,
-                updated_at=row.updated_at
+                updated_at=row.updated_at,
             )
             task_objects.append(task)
-        
+
         # Get total count for the search (without limit)
-        count_sql = search_sql.replace(
-            "SELECT t.*, ts_rank(to_tsvector('english', t.title || ' ' || COALESCE(t.description, '')), plainto_tsquery('english', :query)) as rank",
-            "SELECT COUNT(*) as total"
-        ).split("ORDER BY")[0] + "LIMIT 1"
-        
+        count_sql = (
+            search_sql.replace(
+                "SELECT t.*, ts_rank(to_tsvector('english', t.title || ' ' || COALESCE(t.description, '')), plainto_tsquery('english', :query)) as rank",
+                "SELECT COUNT(*) as total",
+            ).split("ORDER BY")[0]
+            + "LIMIT 1"
+        )
+
         count_result = db.execute(text(count_sql), params)
         total_matches = count_result.scalar() or 0
-        
+
         # Get search suggestions if requested
         suggestions = None
         if include_suggestions:
             suggestions = get_search_suggestions(db, current_user.id, normalized_query)
-        
+
         # Calculate search statistics
-        search_stats = calculate_search_stats(start_time, total_matches, normalized_query)
-        
+        search_stats = calculate_search_stats(
+            start_time, total_matches, normalized_query
+        )
+
         return TaskSearchResponse(
             items=task_objects,
             query=normalized_query,
             total_matches=total_matches,
             search_time_ms=search_stats["search_time_ms"],
-            suggestions=suggestions
+            suggestions=suggestions,
         )
-        
+
     except Exception as e:
         # Log the error and return a user-friendly message
         raise HTTPException(
             status_code=500,
-            detail="Search failed. Please try a different query or contact support."
+            detail="Search failed. Please try a different query or contact support.",
         )
 
 

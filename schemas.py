@@ -85,6 +85,7 @@ class TaskOut(TaskBase):
 # Pagination Schemas
 class TaskListResponse(BaseModel):
     """Paginated task list response"""
+
     items: List[TaskOut]
     next_cursor: Optional[str] = None
     has_next: bool = False
@@ -94,6 +95,7 @@ class TaskListResponse(BaseModel):
 # Search Schemas
 class TaskSearchResponse(BaseModel):
     """Search results response"""
+
     items: List[TaskOut]
     query: str
     total_matches: int
@@ -103,6 +105,7 @@ class TaskSearchResponse(BaseModel):
 
 class SearchFilters(BaseModel):
     """Search filters"""
+
     status: Optional[TaskStatus] = None
     category: Optional[str] = None
     priority: Optional[TaskPriority] = None
