@@ -18,7 +18,7 @@ from middleware import RequestTimingMiddleware, SecurityHeadersMiddleware
 app = FastAPI(
     title=Config.API_TITLE,
     description=Config.API_DESCRIPTION,
-    version=Config.API_VERSION
+    version=Config.API_VERSION,
 )
 
 # Configure logging
@@ -110,7 +110,7 @@ async def devtrackr_exception_handler(request: Request, exc: DevTrackrException)
                 "details": exc.details,
                 "request_id": request_id,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+            },
         },
     )
 
@@ -131,7 +131,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
                 "status_code": exc.status_code,
                 "request_id": request_id,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+            },
         },
     )
 
@@ -152,7 +152,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
                 "details": exc.errors(),
                 "request_id": request_id,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+            },
         },
     )
 
@@ -172,7 +172,7 @@ async def general_exception_handler(request: Request, exc: Exception):
                 "message": "An unexpected error occurred",
                 "request_id": request_id,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+            },
         },
     )
 
@@ -252,22 +252,30 @@ def info():
 @app.get("/utils/demo")
 def utils_demo():
     """Demo endpoint showcasing utility functions"""
-    from utils import generate_slug, format_duration, is_valid_email, get_current_timestamp, truncate_string
-    
+    from utils import (
+        generate_slug,
+        format_duration,
+        is_valid_email,
+        get_current_timestamp,
+        truncate_string,
+    )
+
     return {
         "utilities_demo": {
             "slug_example": generate_slug("Hello World! This is a test."),
             "duration_examples": {
                 "30_seconds": format_duration(30),
                 "90_seconds": format_duration(90),
-                "3661_seconds": format_duration(3661)
+                "3661_seconds": format_duration(3661),
             },
             "email_validation": {
                 "valid_email": is_valid_email("test@example.com"),
-                "invalid_email": is_valid_email("not-an-email")
+                "invalid_email": is_valid_email("not-an-email"),
             },
             "current_timestamp": get_current_timestamp(),
-            "truncation_example": truncate_string("This is a very long string that should be truncated", 20)
+            "truncation_example": truncate_string(
+                "This is a very long string that should be truncated", 20
+            ),
         }
     }
 
@@ -286,14 +294,14 @@ def get_developer_quote():
         "It's not a bug; it's an undocumented feature.",
         "The only way to go fast, is to go well.",
         "Clean code always looks like it was written by someone who cares.",
-        "Simplicity is the ultimate sophistication."
+        "Simplicity is the ultimate sophistication.",
     ]
-    
+
     selected_quote = random.choice(quotes)
     return {
         "quote": selected_quote,
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "source": "DevTrackr API"
+        "source": "DevTrackr API",
     }
 
 
