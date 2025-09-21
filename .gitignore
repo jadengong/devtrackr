@@ -32,3 +32,21 @@ Thumbs.db
 htmlcov/
 .coverage
 coverage.xml
+
+# Test databases and temporary files
+test_migrations.db
+test.db
+*.log
+
+# Backup files
+backups/
+*.bak
+
+# IDE files
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp
