@@ -21,6 +21,7 @@ from search_utils import (
     normalize_search_query,
     calculate_search_stats,
 )
+from services.activity_logger import ActivityLogger
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
@@ -46,6 +47,15 @@ def create_task(
     db.add(task)
     db.commit()
     db.refresh(task)
+    
+    # Log activity
+    ActivityLogger.log_task_created(
+        db=db,
+        user_id=current_user.id,
+        task_id=task.id,
+        task_title=task.title,
+    )
+    
     return task
 
 

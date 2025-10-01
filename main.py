@@ -10,6 +10,7 @@ from routers import tasks as task_router
 from routers import auth as auth_router
 from routers import metrics as metrics_router
 from routers import time_tracking as time_router
+from routers import activity as activity_router
 from datetime import datetime, timezone
 from config import Config
 from middleware import RequestTimingMiddleware, SecurityHeadersMiddleware
@@ -73,6 +74,7 @@ app.include_router(task_router.router)
 app.include_router(auth_router.router)
 app.include_router(metrics_router.router)
 app.include_router(time_router.router)
+app.include_router(activity_router.router)
 
 # Track application start time for readiness metrics
 START_TIME = datetime.now(timezone.utc)

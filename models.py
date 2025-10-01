@@ -11,6 +11,7 @@ from sqlalchemy import (
     func,
     ForeignKey,
     JSON,
+    Column,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from db import Base  # adjust import if db.py is in a package
@@ -54,6 +55,16 @@ class User(Base):
     # Relationship to tasks
     tasks: Mapped[list["Task"]] = relationship(
         "Task", back_populates="owner", cascade="all, delete-orphan"
+    )
+    
+    # Relationship to time entries
+    time_entries: Mapped[list["TimeEntry"]] = relationship(
+        "TimeEntry", back_populates="owner", cascade="all, delete-orphan"
+    )
+    
+    # Relationship to activity logs
+    activity_logs: Mapped[list["ActivityLog"]] = relationship(
+        "ActivityLog", back_populates="user", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:
@@ -189,4 +200,44 @@ class TimeEntry(Base):
         return (
             f"<TimeEntry id={self.id} task_id={self.task_id} "
             f"status={self.status} duration={self.duration_minutes}>"
+        )
+
+
+class ActivityType(str, enum.Enum):
+    """Activity types for the activity log."""
+    TASK_CREATED = "task_created"
+    TASK_UPDATED = "task_updated"
+    TASK_DELETED = "task_deleted"
+    TASK_ARCHIVED = "task_archived"
+    TASK_UNARCHIVED = "task_unarchived"
+    TIMER_STARTED = "timer_started"
+    TIMER_STOPPED = "timer_stopped"
+
+
+class ActivityLog(Base):
+    """Activity log for tracking recent user actions."""
+
+    __tablename__ = "activity_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    activity_type = Column(Enum(ActivityType), nullable=False, index=True)
+    entity_type = Column(String(50), nullable=False)  # "task", "time_entry", etc.
+    entity_id = Column(Integer, nullable=True)  # ID of the affected entity
+    description = Column(Text, nullable=False)  # Human-readable description
+    activity_metadata = Column(JSON, nullable=True)  # Additional data (old values, etc.)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+
+    # Relationship
+    user = relationship("User", back_populates="activity_logs")
+
+    __table_args__ = (
+        Index("ix_activity_logs_user_created", "user_id", "created_at"),
+        Index("ix_activity_logs_type_created", "activity_type", "created_at"),
+    )
+
+    def __repr__(self) -> str:
+        return (
+            f"<ActivityLog id={self.id} user_id={self.user_id} "
+            f"type={self.activity_type} entity={self.entity_type}:{self.entity_id}>"
         )
