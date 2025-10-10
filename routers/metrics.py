@@ -3,9 +3,9 @@ from typing import List
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from models import Task, TaskStatus, User
-from schemas import TaskMetrics, CategoryBreakdown, WeeklyStats
-from deps import get_db, get_current_active_user
+from core.models import Task, TaskStatus, User
+from core.schemas import TaskMetrics, CategoryBreakdown, WeeklyStats
+from core.deps import get_db, get_current_active_user
 
 router = APIRouter(prefix="/metrics", tags=["analytics"])
 

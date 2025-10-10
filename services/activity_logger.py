@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Optional, Dict, Any
 from sqlalchemy.orm import Session
 
-from models import ActivityLog, ActivityType, User
+from core.models import ActivityLog, ActivityType, User
 
 
 class ActivityLogger:

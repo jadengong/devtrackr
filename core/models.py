@@ -14,7 +14,7 @@ from sqlalchemy import (
     Column,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from db import Base  # adjust import if db.py is in a package
+from .db import Base  # adjust import if db.py is in a package
 
 
 class TaskStatus(str, enum.Enum):

@@ -4,8 +4,8 @@ import time
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from sqlalchemy import select, and_, or_, func, text
-from models import Task, TaskStatus, TaskPriority, User
-from schemas import (
+from core.models import Task, TaskStatus, TaskPriority, User
+from core.schemas import (
     TaskCreate,
     TaskUpdate,
     TaskOut,
@@ -13,7 +13,7 @@ from schemas import (
     TaskSearchResponse,
     SearchFilters,
 )
-from deps import get_db, get_current_active_user
+from core.deps import get_db, get_current_active_user
 from utils.pagination import create_task_cursor, get_pagination_params
 from utils.search_utils import (
     build_search_query,

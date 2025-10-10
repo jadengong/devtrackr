@@ -3,8 +3,8 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func, and_
-from models import Task, TimeEntry, TimeEntryStatus, User
-from schemas import (
+from core.models import Task, TimeEntry, TimeEntryStatus, User
+from core.schemas import (
     TimeEntryUpdate,
     TimeEntryOut,
     TimerStart,
@@ -12,7 +12,7 @@ from schemas import (
     ActiveTimer,
     TimeSummary,
 )
-from deps import get_db, get_current_active_user
+from core.deps import get_db, get_current_active_user
 
 router = APIRouter(prefix="/time", tags=["time-tracking"])
 

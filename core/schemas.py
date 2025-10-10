@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, Field, EmailStr
-from models import TaskStatus, TaskPriority, TimeEntryStatus
+from .models import TaskStatus, TaskPriority, TimeEntryStatus
 
 
 # User Schemas

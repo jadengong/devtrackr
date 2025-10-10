@@ -15,7 +15,7 @@ def demo_activity_logger():
 
     try:
         from services.activity_logger import ActivityLogger
-        from models import ActivityType
+        from core.models import ActivityType
 
         print("Successfully imported ActivityLogger and ActivityType")
 
@@ -41,7 +41,7 @@ def demo_activity_types():
     print("-" * 35)
 
     try:
-        from models import ActivityType
+        from core.models import ActivityType
 
         print("Available Activity Types:")
         for activity_type in ActivityType:

@@ -13,7 +13,7 @@ from routers import time_tracking as time_router
 from routers import activity as activity_router
 from datetime import datetime, timezone
 from config import Config
-from middleware import RequestTimingMiddleware, SecurityHeadersMiddleware
+from config.middleware import RequestTimingMiddleware, SecurityHeadersMiddleware
 
 # Create FastAPI app
 app = FastAPI(

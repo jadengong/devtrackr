@@ -13,9 +13,9 @@ load_dotenv()
 
 # Import your app and database components
 from main import app
-from db import Base
-from deps import get_db, get_current_active_user
-from models import User, Task
+from core.db import Base
+from core.deps import get_db, get_current_active_user
+from core.models import User, Task
 
 # Load test database URL from environment
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "sqlite:///./test.db")
@@ -80,7 +80,7 @@ def db_session(db_engine) -> Generator[Session, None, None]:
 @pytest.fixture(scope="function")
 def test_user(db_session) -> User:
     """Create a test user for authentication."""
-    from deps import get_password_hash
+    from core.deps import get_password_hash
 
     user = User(
         email="test@example.com",

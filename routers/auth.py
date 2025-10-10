@@ -2,7 +2,7 @@ from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from deps import (
+from core.deps import (
     get_db,
     get_password_hash,
     verify_password,
@@ -10,8 +10,8 @@ from deps import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     get_current_user,
 )
-from models import User
-from schemas import UserCreate, UserOut, UserLogin, Token
+from core.models import User
+from core.schemas import UserCreate, UserOut, UserLogin, Token
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 

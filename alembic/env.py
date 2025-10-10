@@ -33,8 +33,8 @@ if database_url:
     config.set_main_option("sqlalchemy.url", database_url)
 
 # --- import your metadata for autogenerate ---
-from db import Base
-import models
+from core.db import Base
+import core.models
 
 target_metadata = Base.metadata
 

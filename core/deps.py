@@ -9,8 +9,8 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 from typing import Optional
-from db import SessionLocal
-from models import User
+from .db import SessionLocal
+from .models import User
 
 # Security configuration
 SECRET_KEY = "your-secret-key-here-change-in-production"  # Change this in production!

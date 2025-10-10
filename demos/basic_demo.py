@@ -15,7 +15,7 @@ def demo_models():
     print("=" * 50)
 
     try:
-        from models import (
+        from core.models import (
             Task,
             User,
             TimeEntry,
@@ -55,7 +55,7 @@ def demo_schemas():
     print("=" * 50)
 
     try:
-        from schemas import TaskCreate, TaskUpdate, UserCreate, TaskOut
+        from core.schemas import TaskCreate, TaskUpdate, UserCreate, TaskOut
 
         print("Successfully imported schemas")
 
