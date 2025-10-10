@@ -68,16 +68,16 @@ def deploy_full():
 def deploy_test_minimal():
     """Deploy with absolute minimal configuration"""
     print("Setting up absolute minimal deployment...")
-    
+
     # Get script directory and project root
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(os.path.dirname(script_dir))
     config_path = os.path.join(script_dir, "..", "configs", "vercel-test-minimal.json")
     vercel_path = os.path.join(project_root, "vercel.json")
-    
+
     # Copy test minimal config
     shutil.copy(config_path, vercel_path)
-    
+
     print("Absolute minimal configuration ready!")
     print("Next steps:")
     print("   1. git add .")
@@ -90,7 +90,7 @@ def main():
     """Main deployment script"""
     print("Vercel Deployment Testing Script")
     print("=" * 40)
-    
+
     if len(sys.argv) < 2:
         print("Usage: python deploy-test.py [test-minimal|minimal|simple|full]")
         print()
