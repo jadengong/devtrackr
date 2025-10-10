@@ -6,6 +6,7 @@ Demo utilities for importing DevTrackr modules
 import sys
 import os
 
+
 def setup_demo_imports():
     """Add the parent directory to Python path for imports"""
     current_dir = os.path.dirname(os.path.abspath(__file__))

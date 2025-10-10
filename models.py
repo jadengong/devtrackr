@@ -56,12 +56,12 @@ class User(Base):
     tasks: Mapped[list["Task"]] = relationship(
         "Task", back_populates="owner", cascade="all, delete-orphan"
     )
-    
+
     # Relationship to time entries
     time_entries: Mapped[list["TimeEntry"]] = relationship(
         "TimeEntry", back_populates="owner", cascade="all, delete-orphan"
     )
-    
+
     # Relationship to activity logs
     activity_logs: Mapped[list["ActivityLog"]] = relationship(
         "ActivityLog", back_populates="user", cascade="all, delete-orphan"
@@ -205,6 +205,7 @@ class TimeEntry(Base):
 
 class ActivityType(str, enum.Enum):
     """Activity types for the activity log."""
+
     TASK_CREATED = "task_created"
     TASK_UPDATED = "task_updated"
     TASK_DELETED = "task_deleted"
@@ -225,7 +226,9 @@ class ActivityLog(Base):
     entity_type = Column(String(50), nullable=False)  # "task", "time_entry", etc.
     entity_id = Column(Integer, nullable=True)  # ID of the affected entity
     description = Column(Text, nullable=False)  # Human-readable description
-    activity_metadata = Column(JSON, nullable=True)  # Additional data (old values, etc.)
+    activity_metadata = Column(
+        JSON, nullable=True
+    )  # Additional data (old values, etc.)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
 
     # Relationship

@@ -206,6 +206,7 @@ class TimeSummary(BaseModel):
 # Activity Log Schemas
 class ActivityLogOut(BaseModel):
     """Activity log output schema."""
+
     id: int
     activity_type: str
     entity_type: str
@@ -220,6 +221,7 @@ class ActivityLogOut(BaseModel):
 
 class ActivityLogListResponse(BaseModel):
     """Paginated activity log response."""
+
     items: List[ActivityLogOut]
     next_cursor: Optional[str] = None
     has_next: bool = False

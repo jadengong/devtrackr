@@ -190,4 +190,6 @@ class TestTasksAPI:
         assert response.status_code == status.HTTP_200_OK
         in_progress_response = response.json()
         assert len(in_progress_response["items"]) == 1
-        assert all(task["status"] == "in_progress" for task in in_progress_response["items"])
+        assert all(
+            task["status"] == "in_progress" for task in in_progress_response["items"]
+        )

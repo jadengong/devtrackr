@@ -15,13 +15,11 @@ __all__ = [
     # Pagination exports
     "create_task_cursor",
     "get_pagination_params",
-    
     # Search utilities exports
     "build_search_query",
-    "get_search_suggestions", 
+    "get_search_suggestions",
     "normalize_search_query",
     "calculate_search_stats",
-    
     # General utilities exports
     "generate_slug",
     "format_duration",

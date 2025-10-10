@@ -47,7 +47,7 @@ def create_task(
     db.add(task)
     db.commit()
     db.refresh(task)
-    
+
     # Log activity
     ActivityLogger.log_task_created(
         db=db,
@@ -55,7 +55,7 @@ def create_task(
         task_id=task.id,
         task_title=task.title,
     )
-    
+
     return task
 
 

@@ -24,7 +24,7 @@ class ActivityLogger:
     ) -> ActivityLog:
         """
         Log an activity for a user.
-        
+
         Args:
             db: Database session
             user_id: ID of the user performing the action
@@ -33,7 +33,7 @@ class ActivityLogger:
             entity_id: ID of the affected entity
             description: Human-readable description of the activity
             activity_metadata: Additional data about the activity
-            
+
         Returns:
             The created ActivityLog instance
         """
@@ -46,11 +46,11 @@ class ActivityLogger:
             activity_metadata=activity_metadata or {},
             created_at=datetime.utcnow(),
         )
-        
+
         db.add(activity)
         db.commit()
         db.refresh(activity)
-        
+
         return activity
 
     @staticmethod

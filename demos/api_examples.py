@@ -4,14 +4,15 @@ DevTrackr API Examples Demo
 Shows detailed API endpoint examples with request/response formats
 """
 
+
 def demo_api_examples():
     print("API ENDPOINTS DEMONSTRATION WITH EXAMPLES")
     print("=" * 60)
-    
+
     # Authentication Examples
     print("\n1. AUTHENTICATION ENDPOINTS")
     print("-" * 30)
-    
+
     print("User Registration:")
     print("POST /auth/register")
     print("Body: {")
@@ -19,7 +20,7 @@ def demo_api_examples():
     print('  "username": "johndoe",')
     print('  "password": "securepassword123"')
     print("}")
-    
+
     print("\nUser Login:")
     print("POST /auth/login")
     print("Body: {")
@@ -30,11 +31,11 @@ def demo_api_examples():
     print('  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",')
     print('  "token_type": "bearer"')
     print("}")
-    
+
     # Task Management Examples
     print("\n2. TASK MANAGEMENT ENDPOINTS")
     print("-" * 35)
-    
+
     print("Create Task:")
     print("POST /tasks")
     print("Headers: Authorization: Bearer <token>")
@@ -46,11 +47,11 @@ def demo_api_examples():
     print('  "estimated_minutes": 240,')
     print('  "due_date": "2024-01-20T17:00:00Z"')
     print("}")
-    
+
     print("\nGet Tasks with Filtering:")
     print("GET /tasks?status=todo&priority=high&category=backend&limit=10")
     print("Headers: Authorization: Bearer <token>")
-    
+
     print("\nUpdate Task:")
     print("PATCH /tasks/123")
     print("Headers: Authorization: Bearer <token>")
@@ -58,25 +59,25 @@ def demo_api_examples():
     print('  "status": "in_progress",')
     print('  "actual_minutes": 120')
     print("}")
-    
+
     # Search Examples
     print("\n3. SEARCH FUNCTIONALITY")
     print("-" * 25)
-    
+
     print("Full-text Search:")
     print("GET /tasks/search?q=authentication")
     print("Headers: Authorization: Bearer <token>")
-    
+
     print("\nSearch with Filters:")
     print("GET /tasks/search?q=bug&status=todo&priority=urgent")
-    
+
     print("\nSearch with Date Range:")
     print("GET /tasks/search?q=deadline&due_after=2024-01-01&due_before=2024-12-31")
-    
+
     # Time Tracking Examples
     print("\n4. TIME TRACKING ENDPOINTS")
     print("-" * 30)
-    
+
     print("Start Timer:")
     print("POST /time-tracking/start")
     print("Headers: Authorization: Bearer <token>")
@@ -84,18 +85,18 @@ def demo_api_examples():
     print('  "task_id": 123,')
     print('  "description": "Working on authentication implementation"')
     print("}")
-    
+
     print("\nStop Timer:")
     print("POST /time-tracking/stop")
     print("Headers: Authorization: Bearer <token>")
     print("Body: {")
     print('  "task_id": 123')
     print("}")
-    
+
     # Analytics Examples
     print("\n5. ANALYTICS ENDPOINTS")
     print("-" * 25)
-    
+
     print("Task Summary:")
     print("GET /metrics/summary")
     print("Headers: Authorization: Bearer <token>")
@@ -106,7 +107,7 @@ def demo_api_examples():
     print('  "todo_tasks": 25,')
     print('  "completion_rate": 0.27')
     print("}")
-    
+
     print("\nCategory Breakdown:")
     print("GET /metrics/categories")
     print("Response: {")
@@ -114,13 +115,14 @@ def demo_api_examples():
     print('    {"name": "backend", "count": 15, "completed": 5},')
     print('    {"name": "frontend", "count": 12, "completed": 4},')
     print('    {"name": "testing", "count": 8, "completed": 3}')
-    print('  ]')
+    print("  ]")
     print("}")
+
 
 def demo_workflow():
     print("\n6. COMPLETE USER WORKFLOW")
     print("-" * 30)
-    
+
     steps = [
         "1. Register: POST /auth/register",
         "2. Login: POST /auth/login -> Get JWT token",
@@ -131,16 +133,17 @@ def demo_workflow():
         "7. Update task: PATCH /tasks/{id} -> Activity logged",
         "8. Complete task: PATCH /tasks/{id} (status: done)",
         "9. View analytics: GET /metrics/summary",
-        "10. Search tasks: GET /tasks/search?q=authentication"
+        "10. Search tasks: GET /tasks/search?q=authentication",
     ]
-    
+
     for step in steps:
         print(f"   {step}")
+
 
 if __name__ == "__main__":
     demo_api_examples()
     demo_workflow()
-    
+
     print("\n" + "=" * 60)
     print("KEY FEATURES DEMONSTRATED:")
     print("- JWT Authentication with secure token handling")
