@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func, and_
 
-from db import get_db
+from deps import get_db
 from deps import get_current_active_user
 from models import User, ActivityLog, ActivityType
 from schemas import ActivityLogListResponse, ActivityLogOut
