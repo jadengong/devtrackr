@@ -16,17 +16,16 @@ from .deps import *
 __all__ = [
     # Models exports
     "User",
-    "Task", 
+    "Task",
     "TimeEntry",
     "ActivityLog",
     "TaskStatus",
     "TaskPriority",
     "TimeEntryStatus",
     "ActivityType",
-    
     # Schemas exports
     "UserCreate",
-    "UserLogin", 
+    "UserLogin",
     "UserOut",
     "Token",
     "TaskCreate",
@@ -36,7 +35,7 @@ __all__ = [
     "TaskSearchResponse",
     "SearchFilters",
     "TimeEntryCreate",
-    "TimeEntryUpdate", 
+    "TimeEntryUpdate",
     "TimeEntryOut",
     "TimeEntryListResponse",
     "ActivityLogOut",
@@ -44,13 +43,11 @@ __all__ = [
     "TaskMetrics",
     "CategoryBreakdown",
     "WeeklyStats",
-    
     # Database exports
     "engine",
     "SessionLocal",
     "get_db",
     "Base",
-    
     # Dependencies exports
     "get_password_hash",
     "verify_password",

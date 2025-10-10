@@ -11,6 +11,6 @@ from .middleware import RequestTimingMiddleware, SecurityHeadersMiddleware
 
 __all__ = [
     "Config",
-    "RequestTimingMiddleware", 
+    "RequestTimingMiddleware",
     "SecurityHeadersMiddleware",
 ]
