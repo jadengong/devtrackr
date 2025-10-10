@@ -8,7 +8,7 @@ import json
 from datetime import datetime
 
 
-def test_pagination():
+def pagination_integration_test():
     """Test the pagination functionality."""
     base_url = "http://localhost:8000"
 
@@ -65,4 +65,4 @@ def test_pagination():
 if __name__ == "__main__":
     print("Note: Make sure your DevTrackr API is running on localhost:8000")
     print("You may need to authenticate first if auth is required")
-    test_pagination()
+    pagination_integration_test()

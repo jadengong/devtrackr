@@ -7,7 +7,7 @@ import json
 from datetime import datetime
 
 
-def test_search_functionality():
+def search_integration_test():
     """Test the search functionality."""
     base_url = "http://localhost:8000"
 
@@ -133,4 +133,4 @@ if __name__ == "__main__":
     # Uncomment the next line to create sample tasks first
     # create_sample_tasks()
 
-    test_search_functionality()
+    search_integration_test()
