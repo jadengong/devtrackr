@@ -336,36 +336,29 @@ async def run_migrations():
     try:
         import subprocess
         import os
-        
+
         # Check if running in production
         if Config.is_production() and os.getenv("VERCEL") != "1":
             raise HTTPException(
-                status_code=403, 
-                detail="Migration endpoint disabled in production"
+                status_code=403, detail="Migration endpoint disabled in production"
             )
-        
+
         # Run migrations
         result = subprocess.run(
-            ["alembic", "upgrade", "head"],
-            capture_output=True,
-            text=True
+            ["alembic", "upgrade", "head"], capture_output=True, text=True
         )
-        
+
         if result.returncode == 0:
             return {
                 "message": "Database migrations completed successfully",
                 "output": result.stdout,
-                "timestamp": datetime.now(timezone.utc)
+                "timestamp": datetime.now(timezone.utc),
             }
         else:
             raise HTTPException(
-                status_code=500,
-                detail=f"Migration failed: {result.stderr}"
+                status_code=500, detail=f"Migration failed: {result.stderr}"
             )
-            
+
     except Exception as e:
         logger.error(f"Migration error: {e}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Migration error: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Migration error: {str(e)}")

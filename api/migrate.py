@@ -23,15 +23,15 @@ def run_migrations():
     try:
         print("Starting database migrations...")
         print(f"Database URL: {Config.get_database_url()}")
-        
+
         # Run alembic upgrade
         result = subprocess.run(
             ["alembic", "upgrade", "head"],
             capture_output=True,
             text=True,
-            cwd=parent_dir
+            cwd=parent_dir,
         )
-        
+
         if result.returncode == 0:
             print("✅ Database migrations completed successfully!")
             print(result.stdout)
@@ -40,11 +40,11 @@ def run_migrations():
             print("STDOUT:", result.stdout)
             print("STDERR:", result.stderr)
             return False
-            
+
     except Exception as e:
         print(f"❌ Error running migrations: {e}")
         return False
-    
+
     return True
 
 
