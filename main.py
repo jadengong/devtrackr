@@ -254,7 +254,7 @@ def info():
 @app.get("/utils/demo")
 def utils_demo():
     """Demo endpoint showcasing utility functions"""
-    from utils import (
+    from utils.utils import (
         generate_slug,
         format_duration,
         is_valid_email,

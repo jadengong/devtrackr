@@ -14,8 +14,8 @@ from schemas import (
     SearchFilters,
 )
 from deps import get_db, get_current_active_user
-from pagination import create_task_cursor, get_pagination_params
-from search_utils import (
+from utils.pagination import create_task_cursor, get_pagination_params
+from utils.search_utils import (
     build_search_query,
     get_search_suggestions,
     normalize_search_query,

@@ -11,7 +11,7 @@ from deps import get_db
 from deps import get_current_active_user
 from models import User, ActivityLog, ActivityType
 from schemas import ActivityLogListResponse, ActivityLogOut
-from pagination import get_pagination_params, create_task_cursor
+from utils.pagination import get_pagination_params, create_task_cursor
 
 router = APIRouter()
 
