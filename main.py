@@ -325,3 +325,47 @@ def test_error_handling(error_type: str):
         raise Exception("This is an unexpected error")
     else:
         return {"message": "No error triggered", "error_type": error_type}
+
+
+@app.post("/admin/migrate")
+async def run_migrations():
+    """
+    Run database migrations.
+    WARNING: Only use this in development or with proper authentication.
+    """
+    try:
+        import subprocess
+        import os
+        
+        # Check if running in production
+        if Config.is_production() and os.getenv("VERCEL") != "1":
+            raise HTTPException(
+                status_code=403, 
+                detail="Migration endpoint disabled in production"
+            )
+        
+        # Run migrations
+        result = subprocess.run(
+            ["alembic", "upgrade", "head"],
+            capture_output=True,
+            text=True
+        )
+        
+        if result.returncode == 0:
+            return {
+                "message": "Database migrations completed successfully",
+                "output": result.stdout,
+                "timestamp": datetime.now(timezone.utc)
+            }
+        else:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Migration failed: {result.stderr}"
+            )
+            
+    except Exception as e:
+        logger.error(f"Migration error: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Migration error: {str(e)}"
+        )
