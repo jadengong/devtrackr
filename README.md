@@ -1,15 +1,7 @@
 # DevTrackr API
 
-A comprehensive task management API built with FastAPI, featuring user authentication, advanced search, time tracking, and analytics. This is a production-ready backend API that provides a robust REST API for task management with enterprise-grade features.
+A task management API built with FastAPI. Handles user auth, search, time tracking, and some basic analytics.
 
-## **Project Status**
-
-**Production Ready** - Complete, well-tested, and professionally organized
-- **14/14 unit tests passing** - Comprehensive test coverage
-- **Clean architecture** - Properly organized codebase with separation of concerns
-- **Code quality** - Black formatting, linting, type hints, and security checks
-- **CI/CD pipeline** - Automated testing, quality checks, and deployment workflows
-- **Documentation** - Comprehensive guides and API documentation
 
 ## **Architecture**
 
@@ -116,10 +108,10 @@ devtrackr-repo/
 
 ### **Troubleshooting**
 
-- **Database connection issues**: Ensure Docker is running and the database container is healthy
+- **Database connection issues**: Check Docker is running and the database container is healthy
 - **Port already in use**: Change the port with `--port 8001` or stop the service using port 8000
 - **Migration errors**: Check that the database is running and accessible
-- **Import errors**: Ensure all dependencies are installed with `pip install -r requirements.txt`
+- **Import errors**: Check that all dependencies are installed with `pip install -r requirements.txt`
 
 ### **Environment Variables**
 
@@ -143,7 +135,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 TEST_DATABASE_URL=sqlite:///:memory:
 ```
 
-## 🧪 **Testing**
+## **Testing**
 
 ### **Unit Tests**
 Run the comprehensive test suite:
@@ -200,7 +192,7 @@ python scripts/run_tests.py
 - **Comprehensive Testing**: Unit tests with coverage reporting
 - **Docker Support**: Easy deployment with Docker and Docker Compose
 
-## 🔧 **API Endpoints**
+## **API Endpoints**
 
 ### **Authentication**
 - `POST /auth/register` - User registration
