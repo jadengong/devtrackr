@@ -2,6 +2,17 @@
 
 A task management API built with FastAPI. Handles user auth, search, time tracking, and some basic analytics.
 
+## **Why I Built This**
+
+I was getting tired of juggling multiple task management tools that either had too many features I didn't need or were missing the ones I actually wanted. Most of them felt overcomplicated for simple project tracking, and the APIs were either non-existent or a pain to work with.
+
+So I built DevTrackr to scratch my own itch - a simple API that does the basics really well. I wanted something that could handle:
+- Quick task creation and updates
+- Decent search without being overengineered  
+- Time tracking that actually works
+- A way to see what I've been working on
+
+The goal was to keep it focused on the core functionality without all the fuss that come with enterprise task management tools.
 
 ## **Architecture**
 
