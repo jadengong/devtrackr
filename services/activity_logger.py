@@ -170,3 +170,21 @@ class ActivityLogger:
                 "duration_minutes": duration_minutes,
             },
         )
+
+    @staticmethod
+    def log_task_unarchived(
+        db: Session,
+        user_id: int,
+        task_id: int,
+        task_title: str,
+    ) -> ActivityLog:
+        """Log task unarchiving."""
+        return ActivityLogger.log_activity(
+            db=db,
+            user_id=user_id,
+            activity_type=ActivityType.TASK_UNARCHIVED,
+            entity_type="task",
+            entity_id=task_id,
+            description=f"Unarchived task: {task_title}",
+            activity_metadata={"task_title": task_title},
+        )

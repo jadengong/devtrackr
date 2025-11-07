@@ -350,6 +350,43 @@ def delete_task(
     return None
 
 
+@router.post("/{task_id}/unarchive", response_model=TaskOut)
+def unarchive_task(
+    task_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    """Unarchive a task (must belong to current user)."""
+    task = db.get(Task, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    if task.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=403, detail="Not authorized to modify this task"
+        )
+
+    if not task.is_archived:
+        raise HTTPException(
+            status_code=400, detail="Task is not archived"
+        )
+
+    task.is_archived = False
+    db.add(task)
+    db.commit()
+    db.refresh(task)
+
+    # Log activity
+    ActivityLogger.log_task_unarchived(
+        db=db,
+        user_id=current_user.id,
+        task_id=task.id,
+        task_title=task.title,
+    )
+
+    return task
+
+
 @router.post("/{task_id}/start-timer")
 def start_task_timer(
     task_id: int,

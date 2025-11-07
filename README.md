@@ -217,7 +217,7 @@ python scripts/run_tests.py
 - `GET /tasks/{task_id}` - Get specific task
 - `PATCH /tasks/{task_id}` - Update task
 - `DELETE /tasks/{task_id}` - Delete task
-- `POST /tasks/{task_id}/archive` - Archive task
+- `POST /tasks/{task_id}/unarchive` - Unarchive task
 
 ### **Time Tracking**
 - `POST /time-tracking/start` - Start timer for task
