@@ -338,7 +338,7 @@ async def run_migrations():
         import os
 
         # Check if running in production
-        if Config.is_production() and os.getenv("VERCEL") != "1":
+        if Config.is_production():
             raise HTTPException(
                 status_code=403, detail="Migration endpoint disabled in production"
             )

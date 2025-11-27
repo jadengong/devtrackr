@@ -2,7 +2,7 @@
 
 A task management API built with FastAPI. Handles user auth, search, time tracking, and some basic analytics.
 
-## **Why I Built This**
+> **Note**: This is a **localhost-only development project**. It's designed to run locally for personal use and development purposes. No cloud deployment configuration is included.
 
 I was getting tired of juggling multiple task management tools that either had too many features I didn't need or were missing the ones I actually wanted. Most of them felt overcomplicated for simple project tracking, and the APIs were either non-existent or a pain to work with.
 
@@ -285,9 +285,9 @@ docker-compose logs -f
 docker-compose down
 ```
 
-### **Production Docker Build**
+### **Docker Build (Local Development)**
 
-Build and run the application container:
+Build and run the application container locally:
 
 ```bash
 # Build the application image
@@ -305,6 +305,8 @@ docker logs devtrackr-api
 # Stop container
 docker stop devtrackr-api
 ```
+
+> **Note**: This Docker setup is for local development only. The application is designed to run on localhost.
 
 ## **CI/CD Pipeline**
 
