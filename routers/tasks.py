@@ -367,9 +367,7 @@ def unarchive_task(
         )
 
     if not task.is_archived:
-        raise HTTPException(
-            status_code=400, detail="Task is not archived"
-        )
+        raise HTTPException(status_code=400, detail="Task is not archived")
 
     task.is_archived = False
     db.add(task)
