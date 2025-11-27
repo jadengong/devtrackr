@@ -2,7 +2,7 @@
 
 A task management API built with FastAPI. Handles user auth, search, time tracking, and some basic analytics.
 
-> **Note**: This is a **localhost-only development project**. It's designed to run locally for personal use and development purposes. No cloud deployment configuration is included.
+> **Note**: This is a **localhost-only development project**. It's designed to run locally for personal use and development purposes. 
 
 I was getting tired of juggling multiple task management tools that either had too many features I didn't need or were missing the ones I actually wanted. Most of them felt overcomplicated for simple project tracking, and the APIs were either non-existent or a pain to work with.
 
@@ -202,6 +202,56 @@ python scripts/run_tests.py
 - **Code Quality**: Automated formatting, linting, and security scanning
 - **Comprehensive Testing**: Unit tests with coverage reporting
 - **Docker Support**: Easy deployment with Docker and Docker Compose
+
+## **Use Case: End-to-End Workflow**
+
+Here's a simple example of how a developer would use DevTrackr throughout their day:
+
+### **Morning: Setup & Planning**
+
+1. **Register/Login** - Create an account or log in to get a JWT token
+   - `POST /auth/register` or `POST /auth/login`
+   - Save the `access_token` for authenticated requests
+
+2. **Create Tasks** - Add tasks for the day
+   - `POST /tasks` - Create tasks with title, description, category, priority, and estimated time
+   - Example: "Implement user authentication endpoint" (high priority, 180 minutes)
+
+### **During Work: Time Tracking**
+
+3. **Start Timer** - Begin tracking time on a task
+   - `POST /time/start` - Start a timer for a specific task
+   - Work on the task...
+
+4. **Stop Timer** - Finish working on the task
+   - `POST /time/stop/{time_entry_id}` - Stop the active timer
+   - Time is automatically calculated and recorded
+
+5. **Update Task Status** - Mark progress
+   - `PATCH /tasks/{task_id}` - Update status (todo → in_progress → done)
+   - Update actual time spent if needed
+
+### **Throughout the Day: Finding Tasks**
+
+6. **Search Tasks** - Find what you need
+   - `GET /tasks/search?q=authentication` - Full-text search
+   - `GET /tasks?priority=high&status=todo` - Filter by status and priority
+
+### **End of Day: Review**
+
+7. **Check Analytics** - Review productivity
+   - `GET /metrics/summary` - Task statistics by status, priority, category
+   - `GET /time/summary` - Time tracking summary with breakdowns
+   - `GET /activity` - View activity log of all actions
+
+### **Try It Out**
+
+The easiest way to explore this workflow is through the interactive API documentation:
+- Open **Swagger UI** at http://localhost:8000/docs
+- Try the endpoints directly in your browser
+- All endpoints include example requests and responses
+
+This workflow demonstrates how DevTrackr helps you: organize tasks → track time → monitor progress → analyze productivity.
 
 ## **API Endpoints**
 
