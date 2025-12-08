@@ -248,6 +248,7 @@ Here's a simple example of how a developer would use DevTrackr throughout their 
 
 The easiest way to explore this workflow is through the interactive API documentation:
 - Open **Swagger UI** at http://localhost:8000/docs
+- Click the **"Authorize"** button to add your JWT token (after logging in)
 - Try the endpoints directly in your browser
 - All endpoints include example requests and responses
 
