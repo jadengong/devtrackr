@@ -117,6 +117,8 @@ devtrackr-repo/
    - **Health Check**: http://localhost:8000/health
    - **Root Endpoint**: http://localhost:8000/
 
+   Verify everything is working by visiting the health check endpoint or opening the Swagger UI.
+
 ### **Troubleshooting**
 
 - **Database connection issues**: Check Docker is running and the database container is healthy
