@@ -197,7 +197,11 @@ async def add_request_id(request: Request, call_next):
 # Root endpoint
 @app.get("/")
 def root():
-    return {"status": "ok", "message": "Welcome to DevTrackr API"}
+    return {
+        "status": "ok",
+        "message": "Welcome to DevTrackr API",
+        "docs": "/docs",
+    }
 
 
 # Health check endpoint for Docker and monitoring
