@@ -32,7 +32,7 @@ def create_task(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    """Create a new task for the current user."""
+    """Create a new task for the authenticated user."""
     task = Task(
         title=payload.title,
         description=payload.description,
