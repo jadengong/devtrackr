@@ -23,7 +23,7 @@ def start_timer(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    """Start a timer for a specific task."""
+    """Start a time tracking timer for a specific task."""
     # Check if task exists and belongs to user
     task = db.get(Task, timer_data.task_id)
     if not task:
