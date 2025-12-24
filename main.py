@@ -301,6 +301,7 @@ def get_developer_quote():
         "The only way to go fast, is to go well.",
         "Clean code always looks like it was written by someone who cares.",
         "Simplicity is the ultimate sophistication.",
+        "Debugging is twice as hard as writing the code in the first place.",
     ]
 
     selected_quote = random.choice(quotes)
