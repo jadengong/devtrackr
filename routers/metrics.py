@@ -14,7 +14,7 @@ router = APIRouter(prefix="/metrics", tags=["analytics"])
 def get_task_summary(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)
 ):
-    """Get overall task summary for the current user."""
+    """Get overall task summary statistics for the authenticated user."""
 
     # Get total counts by status
     status_counts = (
