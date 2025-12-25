@@ -94,10 +94,10 @@ def get_activity_summary(
     current_user: User = Depends(get_current_active_user),
 ):
     """Get activity summary for the current user."""
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, timezone
 
     # Calculate date range
-    end_date = datetime.utcnow()
+    end_date = datetime.now(timezone.utc)
     start_date = end_date - timedelta(days=days)
 
     # Get activity counts by type

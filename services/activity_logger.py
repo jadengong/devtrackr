@@ -2,7 +2,7 @@
 Activity logging service for tracking user actions.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 from sqlalchemy.orm import Session
 
@@ -44,7 +44,7 @@ class ActivityLogger:
             entity_id=entity_id,
             description=description,
             activity_metadata=activity_metadata or {},
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
         )
 
         db.add(activity)

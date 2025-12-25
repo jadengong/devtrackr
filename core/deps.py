@@ -11,11 +11,12 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 from .db import SessionLocal
 from .models import User
+from config import Config
 
 # Security configuration
-SECRET_KEY = "your-secret-key-here-change-in-production"  # Change this in production!
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = Config.SECRET_KEY
+ALGORITHM = "HS256"  # JWT algorithm - standard constant
+ACCESS_TOKEN_EXPIRE_MINUTES = Config.ACCESS_TOKEN_EXPIRE_MINUTES
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

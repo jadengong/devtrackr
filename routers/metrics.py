@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
@@ -96,7 +96,7 @@ def get_weekly_stats(
     """Get weekly productivity statistics for the specified number of weeks."""
 
     weekly_stats = []
-    today = datetime.utcnow()
+    today = datetime.now(timezone.utc)
 
     for week_offset in range(weeks):
         # Calculate week boundaries
@@ -223,7 +223,7 @@ def get_productivity_trends(
         .filter(
             Task.owner_id == current_user.id,
             Task.status == TaskStatus.done,
-            Task.updated_at >= datetime.utcnow() - timedelta(days=days),
+            Task.updated_at >= datetime.now(timezone.utc) - timedelta(days=days),
             Task.is_archived.is_(False),
         )
         .group_by(func.date(Task.updated_at))

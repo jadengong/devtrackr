@@ -1,5 +1,5 @@
 import enum
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import (
     Integer,
     String,
@@ -229,7 +229,12 @@ class ActivityLog(Base):
     activity_metadata = Column(
         JSON, nullable=True
     )  # Additional data (old values, etc.)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+    created_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+        index=True,
+    )
 
     # Relationship
     user = relationship("User", back_populates="activity_logs")

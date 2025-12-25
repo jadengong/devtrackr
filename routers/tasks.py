@@ -315,12 +315,28 @@ def update_task(
     if "priority" in updates and updates["priority"] is not None:
         updates["priority"] = TaskPriority(updates["priority"])
 
+    # Track changes for activity logging
+    changes = {}
     for field, value in updates.items():
+        old_value = getattr(task, field, None)
         setattr(task, field, value)
+        if old_value != value:
+            changes[field] = {"old": old_value, "new": value}
 
     db.add(task)
     db.commit()
     db.refresh(task)
+
+    # Log activity if there were changes
+    if changes:
+        ActivityLogger.log_task_updated(
+            db=db,
+            user_id=current_user.id,
+            task_id=task.id,
+            task_title=task.title,
+            changes=changes,
+        )
+
     return task
 
 
@@ -403,7 +419,7 @@ def start_task_timer(
 
     # Redirect to new time tracking system
     from routers.time_tracking import start_timer
-    from schemas import TimerStart
+    from core.schemas import TimerStart
 
     timer_data = TimerStart(task_id=task_id)
     return start_timer(timer_data, db, current_user)
