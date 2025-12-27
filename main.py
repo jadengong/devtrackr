@@ -302,6 +302,7 @@ def get_developer_quote():
         "Clean code always looks like it was written by someone who cares.",
         "Simplicity is the ultimate sophistication.",
         "Debugging is twice as hard as writing the code in the first place.",
+        "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
     ]
 
     selected_quote = random.choice(quotes)
