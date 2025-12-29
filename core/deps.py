@@ -10,7 +10,7 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from .db import SessionLocal
-from .models import User
+from .models import User, Task
 from config import Config
 
 # Security configuration
@@ -97,3 +97,21 @@ async def get_current_active_user(
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
+
+
+async def get_user_task(
+    task_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+) -> Task:
+    """Get a task by ID and verify it belongs to the current user."""
+    task = db.get(Task, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    if task.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=403, detail="Not authorized to access this task"
+        )
+    
+    return task

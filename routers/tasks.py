@@ -13,7 +13,7 @@ from core.schemas import (
     TaskSearchResponse,
     SearchFilters,
 )
-from core.deps import get_db, get_current_active_user
+from core.deps import get_db, get_current_active_user, get_user_task
 from utils.pagination import create_task_cursor, get_pagination_params
 from utils.search_utils import (
     build_search_query,
@@ -275,39 +275,20 @@ def search_tasks(
 
 @router.get("/{task_id}", response_model=TaskOut)
 def get_task(
-    task_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    task: Task = Depends(get_user_task),
 ):
     """Get a specific task by ID (must belong to current user)."""
-    task = db.get(Task, task_id)
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
-
-    if task.owner_id != current_user.id:
-        raise HTTPException(
-            status_code=403, detail="Not authorized to access this task"
-        )
-
     return task
 
 
 @router.patch("/{task_id}", response_model=TaskOut)
 def update_task(
-    task_id: int,
     payload: TaskUpdate,
+    task: Task = Depends(get_user_task),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
     """Update a task (must belong to current user)."""
-    task = db.get(Task, task_id)
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
-
-    if task.owner_id != current_user.id:
-        raise HTTPException(
-            status_code=403, detail="Not authorized to modify this task"
-        )
 
     updates = payload.model_dump(exclude_unset=True)
     if "status" in updates and updates["status"] is not None:
@@ -342,20 +323,11 @@ def update_task(
 
 @router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_task(
-    task_id: int,
     hard: bool = False,
+    task: Task = Depends(get_user_task),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
 ):
     """Delete a task (soft delete by default, must belong to current user)."""
-    task = db.get(Task, task_id)
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
-
-    if task.owner_id != current_user.id:
-        raise HTTPException(
-            status_code=403, detail="Not authorized to delete this task"
-        )
 
     if hard:
         db.delete(task)
@@ -368,19 +340,11 @@ def delete_task(
 
 @router.post("/{task_id}/unarchive", response_model=TaskOut)
 def unarchive_task(
-    task_id: int,
+    task: Task = Depends(get_user_task),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
     """Unarchive a task (must belong to current user)."""
-    task = db.get(Task, task_id)
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
-
-    if task.owner_id != current_user.id:
-        raise HTTPException(
-            status_code=403, detail="Not authorized to modify this task"
-        )
 
     if not task.is_archived:
         raise HTTPException(status_code=400, detail="Task is not archived")
@@ -403,44 +367,26 @@ def unarchive_task(
 
 @router.post("/{task_id}/start-timer")
 def start_task_timer(
-    task_id: int,
+    task: Task = Depends(get_user_task),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
     """Start timing a task (redirects to new time tracking system)."""
-    task = db.get(Task, task_id)
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
-
-    if task.owner_id != current_user.id:
-        raise HTTPException(
-            status_code=403, detail="Not authorized to access this task"
-        )
-
     # Redirect to new time tracking system
     from routers.time_tracking import start_timer
     from core.schemas import TimerStart
 
-    timer_data = TimerStart(task_id=task_id)
+    timer_data = TimerStart(task_id=task.id)
     return start_timer(timer_data, db, current_user)
 
 
 @router.post("/{task_id}/stop-timer")
 def stop_task_timer(
-    task_id: int,
     minutes_spent: int,
+    task: Task = Depends(get_user_task),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
 ):
     """Stop timing a task and record time spent (legacy endpoint)."""
-    task = db.get(Task, task_id)
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
-
-    if task.owner_id != current_user.id:
-        raise HTTPException(
-            status_code=403, detail="Not authorized to access this task"
-        )
 
     # Update actual time spent (legacy behavior)
     if task.actual_minutes is None:
@@ -454,6 +400,6 @@ def stop_task_timer(
 
     return {
         "message": "Timer stopped (legacy endpoint - consider using /time/stop/{time_entry_id})",
-        "task_id": task_id,
+        "task_id": task.id,
         "total_minutes": task.actual_minutes,
     }
