@@ -26,6 +26,25 @@ from services.activity_logger import ActivityLogger
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
 
+def apply_task_filters(
+    stmt,
+    status_: Optional[TaskStatus] = None,
+    category: Optional[str] = None,
+    due_before: Optional[datetime] = None,
+    archived: Optional[bool] = None,
+):
+    """Apply common task filters to a SQLAlchemy query statement."""
+    if status_ is not None:
+        stmt = stmt.where(Task.status == status_)
+    if category is not None:
+        stmt = stmt.where(Task.category == category)
+    if due_before is not None:
+        stmt = stmt.where(Task.due_date.isnot(None), Task.due_date <= due_before)
+    if archived is not None:
+        stmt = stmt.where(Task.is_archived == archived)
+    return stmt
+
+
 @router.post("", response_model=TaskOut, status_code=status.HTTP_201_CREATED)
 def create_task(
     payload: TaskCreate,
@@ -82,14 +101,7 @@ def list_tasks(
     stmt = select(Task).where(Task.owner_id == current_user.id)
 
     # Apply filters
-    if status_ is not None:
-        stmt = stmt.where(Task.status == status_)
-    if category is not None:
-        stmt = stmt.where(Task.category == category)
-    if due_before is not None:
-        stmt = stmt.where(Task.due_date.isnot(None), Task.due_date <= due_before)
-    if archived is not None:
-        stmt = stmt.where(Task.is_archived == archived)
+    stmt = apply_task_filters(stmt, status_, category, due_before, archived)
 
     # Apply cursor-based pagination
     if cursor_id and cursor_created_at:
@@ -126,19 +138,7 @@ def list_tasks(
     total_count = None
     if include_total:
         count_stmt = select(func.count(Task.id)).where(Task.owner_id == current_user.id)
-
-        # Apply the same filters as the main query
-        if status_ is not None:
-            count_stmt = count_stmt.where(Task.status == status_)
-        if category is not None:
-            count_stmt = count_stmt.where(Task.category == category)
-        if due_before is not None:
-            count_stmt = count_stmt.where(
-                Task.due_date.isnot(None), Task.due_date <= due_before
-            )
-        if archived is not None:
-            count_stmt = count_stmt.where(Task.is_archived == archived)
-
+        count_stmt = apply_task_filters(count_stmt, status_, category, due_before, archived)
         total_count = db.execute(count_stmt).scalar()
 
     return TaskListResponse(
