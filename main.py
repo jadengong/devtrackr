@@ -2,7 +2,6 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-import os
 import uuid
 import logging
 import random
@@ -341,7 +340,6 @@ async def run_migrations():
     """
     try:
         import subprocess
-        import os
 
         # Check if running in production
         if Config.is_production():
