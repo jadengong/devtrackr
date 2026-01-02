@@ -1,8 +1,7 @@
 name: Deployment
 
 on:
-  push:
-    branches: [ main, develop ]
+  # Manual deployment only - no automatic deployments on push
   workflow_dispatch:
     inputs:
       environment:
@@ -29,15 +28,8 @@ jobs:
       - name: Set environment and tag
         id: set-env
         run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            ENV="${{ github.event.inputs.environment }}"
-          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            ENV="production"
-          elif [ "${{ github.ref }}" == "refs/heads/develop" ]; then
-            ENV="staging"
-          else
-            ENV="staging"
-          fi
+          # Get environment from workflow_dispatch input
+          ENV="${{ github.event.inputs.environment }}"
           TAG="${ENV}-${GITHUB_SHA::8}"
           echo "environment=${ENV}" >> $GITHUB_OUTPUT
           echo "docker-tag=${TAG}" >> $GITHUB_OUTPUT
