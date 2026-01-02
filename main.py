@@ -199,6 +199,7 @@ def root():
     return {
         "status": "ok",
         "message": "Welcome to DevTrackr API",
+        "version": API_VERSION,
         "docs": "/docs",
     }
 
