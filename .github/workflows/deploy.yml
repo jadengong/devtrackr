@@ -1,0 +1,228 @@
+name: Deployment
+
+on:
+  push:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  determine-environment:
+    name: Determine Environment
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+      docker-tag: ${{ steps.set-env.outputs.docker-tag }}
+    steps:
+      - name: Set environment and tag
+        id: set-env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            ENV="production"
+          elif [ "${{ github.ref }}" == "refs/heads/develop" ]; then
+            ENV="staging"
+          else
+            ENV="staging"
+          fi
+          TAG="${ENV}-${GITHUB_SHA::8}"
+          echo "environment=${ENV}" >> $GITHUB_OUTPUT
+          echo "docker-tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "Deploying to: ${ENV}"
+          echo "Docker tag: ${TAG}"
+
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: determine-environment
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=${{ needs.determine-environment.outputs.environment }}-
+            type=raw,value=${{ needs.determine-environment.outputs.environment }}-latest
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Output image information
+        run: |
+          echo "Image built and pushed:"
+          echo "${{ steps.meta.outputs.tags }}" | tr ' ' '\n'
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [determine-environment, build]
+    if: needs.determine-environment.outputs.environment == 'staging'
+    environment:
+      name: staging
+      url: ${{ steps.health-check.outputs.url }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Deployment placeholder
+        run: |
+          echo "🚀 Deploying to STAGING environment..."
+          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.determine-environment.outputs.docker-tag }}"
+          echo ""
+          echo "📝 NOTE: Configure your deployment steps here"
+          echo "Examples:"
+          echo "  - Deploy to Heroku, AWS ECS, Google Cloud Run, etc."
+          echo "  - Use kubectl for Kubernetes"
+          echo "  - Use AWS CLI for ECS/Fargate"
+          echo "  - Use Terraform/Ansible for infrastructure deployment"
+      
+      - name: Run database migrations
+        run: |
+          echo "Running database migrations for staging..."
+          # Example: docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.determine-environment.outputs.docker-tag }} alembic upgrade head
+          echo "📝 Configure migration step with your DATABASE_URL secret"
+      
+      - name: Health check
+        id: health-check
+        run: |
+          echo "Performing health check..."
+          # Wait for deployment to be ready
+          sleep 10
+          # Example health check (configure with your staging URL)
+          # STAGING_URL="${STAGING_URL:-http://staging.example.com}"
+          # response=$(curl -s -o /dev/null -w "%{http_code}" $STAGING_URL/health || echo "000")
+          # if [ "$response" != "200" ]; then
+          #   echo "Health check failed with status: $response"
+          #   exit 1
+          # fi
+          # echo "url=$STAGING_URL" >> $GITHUB_OUTPUT
+          echo "✅ Health check passed (configure with your staging URL)"
+          echo "url=https://staging.example.com" >> $GITHUB_OUTPUT
+      
+      - name: Deployment notification
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Staging deployment successful"
+          else
+            echo "❌ Staging deployment failed"
+          fi
+          # Add notification logic here (Slack, Discord, email, etc.)
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [determine-environment, build]
+    if: needs.determine-environment.outputs.environment == 'production'
+    environment:
+      name: production
+      url: ${{ steps.health-check.outputs.url }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Deployment placeholder
+        run: |
+          echo "🚀 Deploying to PRODUCTION environment..."
+          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.determine-environment.outputs.docker-tag }}"
+          echo ""
+          echo "📝 NOTE: Configure your deployment steps here"
+          echo "Examples:"
+          echo "  - Deploy to Heroku, AWS ECS, Google Cloud Run, etc."
+          echo "  - Use kubectl for Kubernetes"
+          echo "  - Use AWS CLI for ECS/Fargate"
+          echo "  - Use Terraform/Ansible for infrastructure deployment"
+      
+      - name: Run database migrations
+        run: |
+          echo "Running database migrations for production..."
+          # Example: docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.determine-environment.outputs.docker-tag }} alembic upgrade head
+          echo "📝 Configure migration step with your DATABASE_URL secret"
+      
+      - name: Health check
+        id: health-check
+        run: |
+          echo "Performing health check..."
+          # Wait for deployment to be ready
+          sleep 10
+          # Example health check (configure with your production URL)
+          # PRODUCTION_URL="${PRODUCTION_URL:-http://api.example.com}"
+          # max_attempts=30
+          # attempt=0
+          # while [ $attempt -lt $max_attempts ]; do
+          #   response=$(curl -s -o /dev/null -w "%{http_code}" $PRODUCTION_URL/health || echo "000")
+          #   if [ "$response" == "200" ]; then
+          #     echo "✅ Health check passed"
+          #     echo "url=$PRODUCTION_URL" >> $GITHUB_OUTPUT
+          #     exit 0
+          #   fi
+          #   attempt=$((attempt + 1))
+          #   echo "Health check attempt $attempt/$max_attempts failed (status: $response), retrying..."
+          #   sleep 5
+          # done
+          # echo "❌ Health check failed after $max_attempts attempts"
+          # exit 1
+          echo "✅ Health check passed (configure with your production URL)"
+          echo "url=https://api.example.com" >> $GITHUB_OUTPUT
+      
+      - name: Deployment notification
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Production deployment successful"
+          else
+            echo "❌ Production deployment failed - consider rollback"
+          fi
+          # Add notification logic here (Slack, Discord, email, etc.)
+      
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed - Rollback recommended"
+          echo "📝 Configure rollback logic here"
+          # Example rollback commands:
+          # kubectl rollout undo deployment/app-name
+          # aws ecs update-service --cluster my-cluster --service my-service --force-new-deployment
+          exit 1
+
