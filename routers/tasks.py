@@ -138,7 +138,9 @@ def list_tasks(
     total_count = None
     if include_total:
         count_stmt = select(func.count(Task.id)).where(Task.owner_id == current_user.id)
-        count_stmt = apply_task_filters(count_stmt, status_, category, due_before, archived)
+        count_stmt = apply_task_filters(
+            count_stmt, status_, category, due_before, archived
+        )
         total_count = db.execute(count_stmt).scalar()
 
     return TaskListResponse(
