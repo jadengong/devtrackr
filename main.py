@@ -4,7 +4,6 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 import uuid
 import logging
-import random
 from routers import tasks as task_router
 from routers import auth as auth_router
 from routers import metrics as metrics_router
@@ -252,85 +251,6 @@ def info():
         },
         "uptime_seconds": uptime_seconds,
     }
-
-
-# Utility demo endpoint
-@app.get("/utils/demo")
-def utils_demo():
-    """Demo endpoint showcasing utility functions"""
-    from utils.utils import (
-        generate_slug,
-        format_duration,
-        is_valid_email,
-        get_current_timestamp,
-        truncate_string,
-    )
-
-    return {
-        "utilities_demo": {
-            "slug_example": generate_slug("Hello World! This is a test."),
-            "duration_examples": {
-                "30_seconds": format_duration(30),
-                "90_seconds": format_duration(90),
-                "3661_seconds": format_duration(3661),
-            },
-            "email_validation": {
-                "valid_email": is_valid_email("test@example.com"),
-                "invalid_email": is_valid_email("not-an-email"),
-            },
-            "current_timestamp": get_current_timestamp(),
-            "truncation_example": truncate_string(
-                "This is a very long string that should be truncated", 20
-            ),
-        }
-    }
-
-
-# Motivational quote endpoint for developers
-@app.get("/quote")
-def get_developer_quote():
-    """Get a random motivational quote for developers"""
-    quotes = [
-        "Code is like humor. When you have to explain it, it's bad.",
-        "First, solve the problem. Then, write the code.",
-        "Experience is the name everyone gives to their mistakes.",
-        "Perfection is achieved not when there is nothing more to add, but when there is nothing left to take away.",
-        "The best error message is the one that never shows up.",
-        "Code never lies, comments sometimes do.",
-        "It's not a bug; it's an undocumented feature.",
-        "The only way to go fast, is to go well.",
-        "Clean code always looks like it was written by someone who cares.",
-        "Simplicity is the ultimate sophistication.",
-        "Debugging is twice as hard as writing the code in the first place.",
-        "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
-    ]
-
-    selected_quote = random.choice(quotes)
-    return {
-        "quote": selected_quote,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "source": "DevTrackr API",
-    }
-
-
-# Test endpoint for error handling demonstration
-@app.get("/test-error/{error_type}")
-def test_error_handling(error_type: str):
-    """Test endpoint to demonstrate different error types"""
-    if error_type == "validation":
-        raise ValidationError("This is a validation error", {"field": "test_field"})
-    elif error_type == "notfound":
-        raise NotFoundError("Test resource not found", {"resource_id": "123"})
-    elif error_type == "unauthorized":
-        raise UnauthorizedError("Test authentication failed")
-    elif error_type == "forbidden":
-        raise ForbiddenError("Test access denied")
-    elif error_type == "http":
-        raise HTTPException(status_code=418, detail="I'm a teapot!")
-    elif error_type == "unexpected":
-        raise Exception("This is an unexpected error")
-    else:
-        return {"message": "No error triggered", "error_type": error_type}
 
 
 @app.post("/admin/migrate")

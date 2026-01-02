@@ -51,12 +51,7 @@ devtrackr-repo/
 ├── tests/                   # Unit tests
 │   ├── test_tasks_api.py   # Task API tests
 │   └── test_time_tracking.py # Time tracking tests
-├── manual_tests/            # Integration tests (manual)
-│   ├── pagination_integration_test.py
-│   └── search_integration_test.py
-├── demos/                   # Demo scripts and examples
 ├── docs/                    # Documentation
-├── scripts/                 # Utility scripts
 └── main.py                  # Application entry point
 ```
 
@@ -161,26 +156,6 @@ python -m pytest --cov=.
 
 # Run specific test file
 python -m pytest tests/test_tasks_api.py -v
-```
-
-### **Manual Integration Tests**
-For testing API endpoints with a running server:
-```bash
-# Install requests (if not already installed)
-pip install requests
-
-# Start the server first
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-
-# Run integration tests (in separate terminal)
-python manual_tests/pagination_integration_test.py
-python manual_tests/search_integration_test.py
-```
-
-### **Test Runner Script**
-Use the convenient test runner:
-```bash
-python scripts/run_tests.py
 ```
 
 ## 📊 **Features**
@@ -291,7 +266,6 @@ This workflow demonstrates how DevTrackr helps you: organize tasks → track tim
 
 ### **Health**
 - `GET /health` - API health status
-- `GET /utils/demo` - Utility functions demo
 
 ## **Search Examples**
 
@@ -411,24 +385,10 @@ python -m alembic upgrade head
 python -m alembic downgrade -1
 ```
 
-### **Demo Scripts**
-Explore the API with interactive demos:
-```bash
-# Run comprehensive demo
-python demos/demo_summary.py
-
-# Explore specific features
-python demos/basic_demo.py
-python demos/search_capabilities.py
-python demos/activity_logging.py
-```
-
 ## **Documentation**
 
 - **API Documentation**: Auto-generated at `/docs` and `/redoc`
 - **Development Guide**: `docs/DEVELOPMENT.md`
-- **Demo Examples**: `demos/` directory with working examples
-- **Manual Tests**: `manual_tests/` directory for integration testing
 
 ## **Contributing**
 
