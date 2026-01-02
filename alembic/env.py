@@ -27,14 +27,14 @@ try:
 except Exception:
     pass  # safe to ignore if python-dotenv isn't installed
 
+# --- import your metadata for autogenerate ---
+# Note: Import must be after path setup, so E402 is expected here
+from core.db import Base  # noqa: E402
+
 # --- point Alembic at your DB URL (prefer env var over alembic.ini) ---
 database_url = os.getenv("DATABASE_URL")
 if database_url:
     config.set_main_option("sqlalchemy.url", database_url)
-
-# --- import your metadata for autogenerate ---
-from core.db import Base
-import core.models
 
 target_metadata = Base.metadata
 

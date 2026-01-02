@@ -5,7 +5,6 @@ Small helper functions that can be used across the application
 
 import re
 from datetime import datetime, timezone
-from typing import Optional
 
 
 def generate_slug(text: str) -> str:

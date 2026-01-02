@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 from datetime import datetime
 import time
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -267,7 +267,7 @@ def search_tasks(
             suggestions=suggestions,
         )
 
-    except Exception as e:
+    except Exception:
         # Log the error and return a user-friendly message
         raise HTTPException(
             status_code=500,

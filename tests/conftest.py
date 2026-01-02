@@ -1,12 +1,10 @@
 import os
-import pytest
 from typing import Generator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import StaticPool
 from fastapi.testclient import TestClient
 from dotenv import load_dotenv
-from sqlalchemy import inspect
 
 # Load environment variables from .env file
 load_dotenv()
@@ -15,7 +13,7 @@ load_dotenv()
 from main import app
 from core.db import Base
 from core.deps import get_db, get_current_active_user
-from core.models import User, Task
+from core.models import User
 
 # Load test database URL from environment
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "sqlite:///./test.db")

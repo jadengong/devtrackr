@@ -1,6 +1,4 @@
-import pytest
 from fastapi import status
-from core.models import TaskStatus
 
 
 class TestTasksAPI:
