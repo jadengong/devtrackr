@@ -3,6 +3,7 @@ Activity log router for tracking and retrieving user activities.
 """
 
 from typing import Optional
+from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func, and_
@@ -94,7 +95,6 @@ def get_activity_summary(
     current_user: User = Depends(get_current_active_user),
 ):
     """Get activity summary for the current user."""
-    from datetime import datetime, timedelta, timezone
 
     # Calculate date range
     end_date = datetime.now(timezone.utc)
