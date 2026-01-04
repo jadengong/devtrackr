@@ -8,8 +8,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func, and_
 
-from core.deps import get_db
-from core.deps import get_current_active_user
+from core.deps import get_db, get_current_active_user
 from core.models import User, ActivityLog, ActivityType
 from core.schemas import ActivityLogListResponse
 from utils.pagination import get_pagination_params, create_task_cursor
