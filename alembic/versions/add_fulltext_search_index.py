@@ -29,6 +29,9 @@ def upgrade():
         print("Skipping PostgreSQL-specific full-text search indexes (using SQLite)")
         return
 
+    # Enable pg_trgm extension for trigram search 
+    op.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm")
+
     # Create a GIN index for full-text search on title and description
     op.execute(
         """
