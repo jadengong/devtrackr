@@ -30,6 +30,7 @@ def upgrade():
         return
 
     # Enable pg_trgm extension for trigram search
+    # This extension provides trigram matching for similarity searches
     op.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm")
 
     # Create a GIN index for full-text search on title and description
