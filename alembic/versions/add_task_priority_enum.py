@@ -31,8 +31,8 @@ def upgrade():
     # Cast the text values to the enum type
     op.execute(
         """
-        UPDATE tasks 
-        SET priority_new = CASE 
+        UPDATE tasks
+        SET priority_new = CASE
             WHEN priority <= 2 THEN 'low'::task_priority
             WHEN priority = 3 THEN 'medium'::task_priority
             WHEN priority = 4 THEN 'high'::task_priority
@@ -74,8 +74,8 @@ def downgrade():
     # Convert enum values back to integers
     op.execute(
         """
-        UPDATE tasks 
-        SET priority = CASE 
+        UPDATE tasks
+        SET priority = CASE
             WHEN priority = 'low' THEN 2
             WHEN priority = 'medium' THEN 3
             WHEN priority = 'high' THEN 4

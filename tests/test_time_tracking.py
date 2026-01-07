@@ -1,6 +1,4 @@
-import pytest
 from fastapi import status
-from datetime import datetime, timezone
 from core.models import TimeEntryStatus
 
 

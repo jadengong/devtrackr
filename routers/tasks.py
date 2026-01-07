@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 from datetime import datetime
 import time
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -138,7 +138,9 @@ def list_tasks(
     total_count = None
     if include_total:
         count_stmt = select(func.count(Task.id)).where(Task.owner_id == current_user.id)
-        count_stmt = apply_task_filters(count_stmt, status_, category, due_before, archived)
+        count_stmt = apply_task_filters(
+            count_stmt, status_, category, due_before, archived
+        )
         total_count = db.execute(count_stmt).scalar()
 
     return TaskListResponse(
@@ -265,7 +267,7 @@ def search_tasks(
             suggestions=suggestions,
         )
 
-    except Exception as e:
+    except Exception:
         # Log the error and return a user-friendly message
         raise HTTPException(
             status_code=500,

@@ -3,14 +3,14 @@ Activity log router for tracking and retrieving user activities.
 """
 
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
+from datetime import datetime, timedelta, timezone
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func, and_
 
-from core.deps import get_db
-from core.deps import get_current_active_user
+from core.deps import get_db, get_current_active_user
 from core.models import User, ActivityLog, ActivityType
-from core.schemas import ActivityLogListResponse, ActivityLogOut
+from core.schemas import ActivityLogListResponse
 from utils.pagination import get_pagination_params, create_task_cursor
 
 router = APIRouter()
@@ -94,7 +94,6 @@ def get_activity_summary(
     current_user: User = Depends(get_current_active_user),
 ):
     """Get activity summary for the current user."""
-    from datetime import datetime, timedelta, timezone
 
     # Calculate date range
     end_date = datetime.now(timezone.utc)

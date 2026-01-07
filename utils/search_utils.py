@@ -4,10 +4,9 @@ Search utilities for full-text search functionality.
 
 import time
 import re
-from typing import List, Optional, Tuple
-from sqlalchemy import text, func
+from typing import List, Tuple
+from sqlalchemy import text
 from sqlalchemy.orm import Session
-from core.models import Task, TaskStatus, TaskPriority
 from core.schemas import SearchFilters
 
 
@@ -108,8 +107,8 @@ def get_search_suggestions(
     # Search for tasks that contain the partial query
     suggestions_query = text(
         """
-        SELECT DISTINCT 
-            CASE 
+        SELECT DISTINCT
+            CASE
                 WHEN LOWER(t.title) LIKE LOWER(:partial || '%') THEN t.title
                 WHEN LOWER(t.description) LIKE LOWER(:partial || '%') THEN t.description
                 ELSE NULL
@@ -117,7 +116,7 @@ def get_search_suggestions(
         FROM tasks t
         WHERE t.owner_id = :user_id
         AND (
-            LOWER(t.title) LIKE LOWER(:partial || '%') 
+            LOWER(t.title) LIKE LOWER(:partial || '%')
             OR LOWER(t.description) LIKE LOWER(:partial || '%')
         )
         AND LENGTH(COALESCE(t.title, '')) > 0

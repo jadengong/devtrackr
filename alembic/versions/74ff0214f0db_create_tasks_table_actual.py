@@ -1,7 +1,7 @@
 """create tasks table (actual)
 
 Revision ID: 74ff0214f0db
-Revises: afb259fba0a3
+Revises:
 Create Date: 2025-08-22 13:41:04.537752
 
 """
@@ -14,7 +14,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = "74ff0214f0db"
-down_revision: Union[str, Sequence[str], None] = "afb259fba0a3"
+down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

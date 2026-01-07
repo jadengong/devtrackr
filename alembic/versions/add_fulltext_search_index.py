@@ -7,7 +7,6 @@ Create Date: 2024-01-15 12:00:00.000000
 """
 
 from alembic import op
-import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
@@ -30,10 +29,14 @@ def upgrade():
         print("Skipping PostgreSQL-specific full-text search indexes (using SQLite)")
         return
 
+    # Enable pg_trgm extension for trigram search
+    # This extension provides trigram matching for similarity searches
+    op.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm")
+
     # Create a GIN index for full-text search on title and description
     op.execute(
         """
-        CREATE INDEX IF NOT EXISTS idx_tasks_fulltext_search 
+        CREATE INDEX IF NOT EXISTS idx_tasks_fulltext_search
         ON tasks USING gin(to_tsvector('english', title || ' ' || COALESCE(description, '')))
     """
     )
@@ -41,7 +44,7 @@ def upgrade():
     # Create a separate index for case-insensitive search
     op.execute(
         """
-        CREATE INDEX IF NOT EXISTS idx_tasks_title_description_gin 
+        CREATE INDEX IF NOT EXISTS idx_tasks_title_description_gin
         ON tasks USING gin((title || ' ' || COALESCE(description, '')) gin_trgm_ops)
     """
     )

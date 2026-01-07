@@ -108,10 +108,10 @@ async def get_user_task(
     task = db.get(Task, task_id)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
-    
+
     if task.owner_id != current_user.id:
         raise HTTPException(
             status_code=403, detail="Not authorized to access this task"
         )
-    
+
     return task

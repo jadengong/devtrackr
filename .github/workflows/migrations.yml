@@ -5,8 +5,8 @@ on:
     branches: [ main ]
     paths: 
       - 'alembic/**'
-      - 'models.py'
-      - 'deps.py'
+      - 'core/models.py'
+      - 'core/deps.py'
   workflow_dispatch:
     inputs:
       environment:
