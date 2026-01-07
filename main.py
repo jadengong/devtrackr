@@ -200,6 +200,7 @@ def root():
         "status": "ok",
         "message": "Welcome to DevTrackr API",
         "docs": "/docs",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
 
