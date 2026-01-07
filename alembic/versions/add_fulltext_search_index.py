@@ -34,6 +34,7 @@ def upgrade():
     op.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm")
 
     # Create a GIN index for full-text search on title and description
+    # Uses PostgreSQL's built-in full-text search with tsvector
     op.execute(
         """
         CREATE INDEX IF NOT EXISTS idx_tasks_fulltext_search
@@ -41,7 +42,8 @@ def upgrade():
     """
     )
 
-    # Create a separate index for case-insensitive search
+    # Create a separate index for case-insensitive trigram search
+    # Enables fuzzy matching and similarity searches
     op.execute(
         """
         CREATE INDEX IF NOT EXISTS idx_tasks_title_description_gin
