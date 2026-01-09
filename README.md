@@ -62,7 +62,47 @@ devtrackr-repo/
 - Docker and Docker Compose (for database)
 - Git
 
-### **Step-by-Step Setup**
+### **Automated Setup (Recommended)**
+
+The easiest way to get started is using our automated setup scripts:
+
+**On macOS/Linux:**
+```bash
+# Make script executable (first time only)
+chmod +x setup.sh
+
+# Run setup script
+./setup.sh
+```
+
+**On Windows (PowerShell):**
+```powershell
+# Run setup script
+.\setup.ps1
+```
+
+The setup script will automatically:
+- ✅ Check all prerequisites (Python, Docker, etc.)
+- ✅ Create and activate a virtual environment
+- ✅ Install all dependencies
+- ✅ Start the PostgreSQL database
+- ✅ Run database migrations
+- ✅ Verify the API is working
+
+After the script completes, you can start the development server:
+```bash
+# Activate virtual environment (if not already active)
+source venv/bin/activate  # macOS/Linux
+# or
+venv\Scripts\activate     # Windows
+
+# Start the server
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+### **Manual Step-by-Step Setup**
+
+If you prefer to set up manually or the automated script doesn't work for your environment:
 
 1. **Clone the repository**
    ```bash
@@ -116,10 +156,18 @@ devtrackr-repo/
 
 ### **Troubleshooting**
 
+**Setup Script Issues:**
+- If the setup script fails, check the error messages for specific issues
+- Ensure Docker Desktop is running before running the setup script
+- On Windows, you may need to run PowerShell as Administrator for some operations
+- If you encounter permission errors, try running the script with appropriate permissions
+
+**Common Issues:**
 - **Database connection issues**: Check Docker is running and the database container is healthy
 - **Port already in use**: Change the port with `--port 8001` or stop the service using port 8000
-- **Migration errors**: Check that the database is running and accessible
+- **Migration errors**: Check that the database is running and accessible. If you see `pg_trgm` extension errors, ensure the migration includes the extension creation (see `alembic/versions/add_fulltext_search_index.py`)
 - **Import errors**: Check that all dependencies are installed with `pip install -r requirements.txt`
+- **Python version**: Ensure you have Python 3.11 or higher installed
 
 ### **Environment Variables**
 
