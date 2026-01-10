@@ -1,8 +1,12 @@
 """Add full-text search index for tasks
 
 Revision ID: add_fulltext_search_index
-Revises:
+Revises: d195cb179a74
 Create Date: 2024-01-15 12:00:00.000000
+
+Adds PostgreSQL full-text search indexes for efficient task searching.
+Creates two GIN indexes: one for standard full-text search using tsvector
+and one for trigram-based similarity matching.
 
 """
 
