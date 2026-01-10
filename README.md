@@ -62,7 +62,7 @@ devtrackr-repo/
 - Docker and Docker Compose (for database)
 - Git
 
-### **Automated Setup (Recommended)**
+### **Automated Setup**
 
 The easiest way to get started is using our automated setup scripts:
 
