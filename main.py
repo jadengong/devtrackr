@@ -195,6 +195,7 @@ async def add_request_id(request: Request, call_next):
 # Root endpoint
 @app.get("/")
 def root():
+    """Root endpoint providing API information and links to documentation."""
     return {
         "status": "ok",
         "message": "Welcome to DevTrackr API",
