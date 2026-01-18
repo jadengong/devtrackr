@@ -1,3 +1,10 @@
+"""
+DevTrackr API - Main application entry point.
+
+FastAPI application with routing, middleware, and error handling.
+Provides task management, time tracking, and analytics endpoints.
+"""
+
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
