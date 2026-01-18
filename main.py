@@ -286,7 +286,7 @@ async def run_migrations():
             return {
                 "message": "Database migrations completed successfully",
                 "output": result.stdout,
-                "timestamp": datetime.now(timezone.utc),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         else:
             raise HTTPException(
