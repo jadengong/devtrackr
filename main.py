@@ -9,7 +9,7 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-import uuid
+from uuid import uuid4
 import logging
 from routers import tasks as task_router
 from routers import auth as auth_router
@@ -187,7 +187,7 @@ async def general_exception_handler(request: Request, exc: Exception):
 # Request ID middleware
 @app.middleware("http")
 async def add_request_id(request: Request, call_next):
-    request_id = str(uuid.uuid4())[:8]
+    request_id = uuid4().hex[:8]
     request.state.request_id = request_id
 
     logger.info(f"Request {request_id}: {request.method} {request.url}")
