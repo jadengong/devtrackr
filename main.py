@@ -208,6 +208,7 @@ def root():
         "message": "Welcome to DevTrackr API",
         "version": API_VERSION,
         "docs": "/docs",
+        "health": "/health",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
