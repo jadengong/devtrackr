@@ -104,7 +104,7 @@ async def devtrackr_exception_handler(request: Request, exc: DevTrackrException)
     """Handle custom DevTrackr exceptions"""
     request_id = getattr(request.state, "request_id", "unknown")
     logger.error(
-        f"Request {request_id}: DevTrackr error - {exc.message}", exc_info=True
+        f"Request {request_id}: DevTrackr error - {exc.message} | Path: {request.url.path}", exc_info=True
     )
 
     return JSONResponse(
@@ -126,7 +126,7 @@ async def devtrackr_exception_handler(request: Request, exc: DevTrackrException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     """Handle FastAPI HTTP exceptions"""
     request_id = getattr(request.state, "request_id", "unknown")
-    logger.warning(f"Request {request_id}: HTTP error {exc.status_code} - {exc.detail}")
+    logger.warning(f"Request {request_id}: HTTP error {exc.status_code} - {exc.detail} | Path: {request.url.path}")
 
     return JSONResponse(
         status_code=exc.status_code,
@@ -147,7 +147,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """Handle request validation errors"""
     request_id = getattr(request.state, "request_id", "unknown")
-    logger.warning(f"Request {request_id}: Validation error - {exc.errors()}")
+    logger.warning(f"Request {request_id}: Validation error - {exc.errors()} | Path: {request.url.path}")
 
     return JSONResponse(
         status_code=422,
@@ -168,7 +168,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 async def general_exception_handler(request: Request, exc: Exception):
     """Handle unexpected exceptions"""
     request_id = getattr(request.state, "request_id", "unknown")
-    logger.error(f"Request {request_id}: Unexpected error - {str(exc)}", exc_info=True)
+    logger.error(f"Request {request_id}: Unexpected error - {str(exc)} | Path: {request.url.path}", exc_info=True)
 
     return JSONResponse(
         status_code=500,
