@@ -98,6 +98,30 @@ app.add_middleware(
 )
 
 
+# Helper function for standardized error responses
+def create_error_response(
+    exc_type: str,
+    message: str,
+    status_code: int,
+    request_id: str,
+    details: dict = None
+) -> JSONResponse:
+    """Create a standardized JSON error response."""
+    return JSONResponse(
+        status_code=status_code,
+        content={
+            "detail": message,
+            "error": {
+                "type": exc_type,
+                "message": message,
+                "details": details or {},
+                "request_id": request_id,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            },
+        },
+    )
+
+
 # Global exception handlers
 @app.exception_handler(DevTrackrException)
 async def devtrackr_exception_handler(request: Request, exc: DevTrackrException):
@@ -107,18 +131,12 @@ async def devtrackr_exception_handler(request: Request, exc: DevTrackrException)
         f"Request {request_id}: DevTrackr error - {exc.message} | Path: {request.url.path}", exc_info=True
     )
 
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={
-            "detail": exc.message,
-            "error": {
-                "type": exc.__class__.__name__,
-                "message": exc.message,
-                "details": exc.details,
-                "request_id": request_id,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            },
-        },
+    return create_error_response(
+        exc.__class__.__name__,
+        exc.message,
+        exc.status_code,
+        request_id,
+        exc.details
     )
 
 
@@ -128,18 +146,12 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     request_id = getattr(request.state, "request_id", "unknown")
     logger.warning(f"Request {request_id}: HTTP error {exc.status_code} - {exc.detail} | Path: {request.url.path}")
 
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={
-            "detail": exc.detail,
-            "error": {
-                "type": "HTTPException",
-                "message": exc.detail,
-                "status_code": exc.status_code,
-                "request_id": request_id,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            },
-        },
+    return create_error_response(
+        "HTTPException",
+        exc.detail,
+        exc.status_code,
+        request_id,
+        {"status_code": exc.status_code}
     )
 
 
@@ -149,18 +161,12 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     request_id = getattr(request.state, "request_id", "unknown")
     logger.warning(f"Request {request_id}: Validation error - {exc.errors()} | Path: {request.url.path}")
 
-    return JSONResponse(
-        status_code=422,
-        content={
-            "detail": exc.errors(),
-            "error": {
-                "type": "ValidationError",
-                "message": "Request validation failed",
-                "details": exc.errors(),
-                "request_id": request_id,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            },
-        },
+    return create_error_response(
+        "ValidationError",
+        "Request validation failed",
+        422,
+        request_id,
+        {"validation_errors": exc.errors()}
     )
 
 
@@ -170,17 +176,11 @@ async def general_exception_handler(request: Request, exc: Exception):
     request_id = getattr(request.state, "request_id", "unknown")
     logger.error(f"Request {request_id}: Unexpected error - {str(exc)} | Path: {request.url.path}", exc_info=True)
 
-    return JSONResponse(
-        status_code=500,
-        content={
-            "detail": "An unexpected error occurred",
-            "error": {
-                "type": "InternalServerError",
-                "message": "An unexpected error occurred",
-                "request_id": request_id,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            },
-        },
+    return create_error_response(
+        "InternalServerError",
+        "An unexpected error occurred",
+        500,
+        request_id
     )
 
 
