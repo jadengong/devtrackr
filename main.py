@@ -19,6 +19,8 @@ from routers import activity as activity_router
 from datetime import datetime, timezone
 from config import Config
 from config.middleware import RequestTimingMiddleware, SecurityHeadersMiddleware
+from core.db import engine
+from sqlalchemy import text
 
 # Create FastAPI app
 app = FastAPI(
@@ -261,6 +263,45 @@ def info():
         },
         "uptime_seconds": uptime_seconds,
     }
+
+
+# Comprehensive status endpoint with health checks
+@app.get("/status")
+def status():
+    """
+    Comprehensive status endpoint with database connectivity check.
+    Useful for monitoring and orchestration systems.
+    """
+    uptime_seconds = int((datetime.now(timezone.utc) - START_TIME).total_seconds())
+    status_data = {
+        "status": "healthy",
+        "service": Config.API_TITLE,
+        "version": API_VERSION,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "uptime_seconds": uptime_seconds,
+        "environment": "production" if Config.is_production() else "development",
+        "checks": {
+            "api": "ok",
+            "database": "unknown",
+        },
+    }
+
+    # Check database connectivity
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+            status_data["checks"]["database"] = "ok"
+    except Exception as e:
+        status_data["status"] = "degraded"
+        status_data["checks"]["database"] = "error"
+        status_data["database_error"] = str(e)
+        logger.warning(f"Database connectivity check failed: {e}")
+
+    # Determine overall status
+    if status_data["checks"]["database"] != "ok":
+        status_data["status"] = "degraded"
+
+    return status_data
 
 
 @app.post("/admin/migrate")
