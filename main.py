@@ -11,6 +11,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from uuid import uuid4
 import logging
+from collections import defaultdict
 from routers import tasks as task_router
 from routers import auth as auth_router
 from routers import metrics as metrics_router
@@ -85,6 +86,14 @@ app.include_router(activity_router.router)
 
 # Track application start time for readiness metrics
 START_TIME = datetime.now(timezone.utc)
+
+# Track request statistics
+request_stats = {
+    "total_requests": 0,
+    "requests_by_method": defaultdict(int),
+    "requests_by_status": defaultdict(int),
+    "requests_by_path": defaultdict(int),
+}
 
 # Add custom middleware
 app.add_middleware(RequestTimingMiddleware)
@@ -197,6 +206,12 @@ async def add_request_id(request: Request, call_next):
     response = await call_next(request)
     response.headers["X-Request-ID"] = request_id
 
+    # Update request statistics
+    request_stats["total_requests"] += 1
+    request_stats["requests_by_method"][request.method] += 1
+    request_stats["requests_by_status"][response.status_code] += 1
+    request_stats["requests_by_path"][request.url.path] += 1
+
     logger.info(f"Request {request_id}: {response.status_code}")
     return response
 
@@ -246,6 +261,28 @@ def readiness_probe():
 @app.get("/version")
 def version():
     return {"version": API_VERSION}
+
+
+# Request statistics endpoint
+@app.get("/stats")
+def get_stats():
+    """
+    Get API request statistics since application start.
+    Provides insights into API usage patterns.
+    """
+    return {
+        "total_requests": request_stats["total_requests"],
+        "requests_by_method": dict(request_stats["requests_by_method"]),
+        "requests_by_status": dict(request_stats["requests_by_status"]),
+        "top_paths": dict(
+            sorted(
+                request_stats["requests_by_path"].items(),
+                key=lambda x: x[1],
+                reverse=True
+            )[:10]
+        ),
+        "uptime_seconds": int((datetime.now(timezone.utc) - START_TIME).total_seconds()),
+    }
 
 
 # Informational endpoint
