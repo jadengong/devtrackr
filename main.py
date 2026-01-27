@@ -282,6 +282,7 @@ def get_stats():
             )[:10]
         ),
         "uptime_seconds": int((datetime.now(timezone.utc) - START_TIME).total_seconds()),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
 
