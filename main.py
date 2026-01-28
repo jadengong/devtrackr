@@ -254,6 +254,7 @@ def readiness_probe():
     return {
         "status": "ready",
         "uptime_seconds": uptime_seconds,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
 
