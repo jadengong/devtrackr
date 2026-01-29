@@ -77,6 +77,13 @@ class ForbiddenError(DevTrackrException):
         super().__init__(message, 403, details)
 
 
+class ConflictError(DevTrackrException):
+    """Raised when a resource conflict occurs (e.g., duplicate entry)"""
+
+    def __init__(self, message: str = "Resource conflict", details: dict = None):
+        super().__init__(message, 409, details)
+
+
 # Include routers
 app.include_router(task_router.router)
 app.include_router(auth_router.router)
