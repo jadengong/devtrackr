@@ -119,11 +119,7 @@ app.add_middleware(
 
 # Helper function for standardized error responses
 def create_error_response(
-    exc_type: str,
-    message: str,
-    status_code: int,
-    request_id: str,
-    details: dict = None
+    exc_type: str, message: str, status_code: int, request_id: str, details: dict = None
 ) -> JSONResponse:
     """Create a standardized JSON error response."""
     return JSONResponse(
@@ -147,15 +143,12 @@ async def devtrackr_exception_handler(request: Request, exc: DevTrackrException)
     """Handle custom DevTrackr exceptions"""
     request_id = getattr(request.state, "request_id", "unknown")
     logger.error(
-        f"Request {request_id}: DevTrackr error - {exc.message} | Path: {request.url.path}", exc_info=True
+        f"Request {request_id}: DevTrackr error - {exc.message} | Path: {request.url.path}",
+        exc_info=True,
     )
 
     return create_error_response(
-        exc.__class__.__name__,
-        exc.message,
-        exc.status_code,
-        request_id,
-        exc.details
+        exc.__class__.__name__, exc.message, exc.status_code, request_id, exc.details
     )
 
 
@@ -163,14 +156,16 @@ async def devtrackr_exception_handler(request: Request, exc: DevTrackrException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     """Handle FastAPI HTTP exceptions"""
     request_id = getattr(request.state, "request_id", "unknown")
-    logger.warning(f"Request {request_id}: HTTP error {exc.status_code} - {exc.detail} | Path: {request.url.path}")
+    logger.warning(
+        f"Request {request_id}: HTTP error {exc.status_code} - {exc.detail} | Path: {request.url.path}"
+    )
 
     return create_error_response(
         "HTTPException",
         exc.detail,
         exc.status_code,
         request_id,
-        {"status_code": exc.status_code}
+        {"status_code": exc.status_code},
     )
 
 
@@ -178,14 +173,16 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """Handle request validation errors"""
     request_id = getattr(request.state, "request_id", "unknown")
-    logger.warning(f"Request {request_id}: Validation error - {exc.errors()} | Path: {request.url.path}")
+    logger.warning(
+        f"Request {request_id}: Validation error - {exc.errors()} | Path: {request.url.path}"
+    )
 
     return create_error_response(
         "ValidationError",
         "Request validation failed",
         422,
         request_id,
-        {"validation_errors": exc.errors()}
+        {"validation_errors": exc.errors()},
     )
 
 
@@ -193,13 +190,13 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 async def general_exception_handler(request: Request, exc: Exception):
     """Handle unexpected exceptions"""
     request_id = getattr(request.state, "request_id", "unknown")
-    logger.error(f"Request {request_id}: Unexpected error - {str(exc)} | Path: {request.url.path}", exc_info=True)
+    logger.error(
+        f"Request {request_id}: Unexpected error - {str(exc)} | Path: {request.url.path}",
+        exc_info=True,
+    )
 
     return create_error_response(
-        "InternalServerError",
-        "An unexpected error occurred",
-        500,
-        request_id
+        "InternalServerError", "An unexpected error occurred", 500, request_id
     )
 
 
@@ -287,10 +284,12 @@ def get_stats():
             sorted(
                 request_stats["requests_by_path"].items(),
                 key=lambda x: x[1],
-                reverse=True
+                reverse=True,
             )[:10]
         ),
-        "uptime_seconds": int((datetime.now(timezone.utc) - START_TIME).total_seconds()),
+        "uptime_seconds": int(
+            (datetime.now(timezone.utc) - START_TIME).total_seconds()
+        ),
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 

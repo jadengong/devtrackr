@@ -30,6 +30,7 @@ except Exception:
 # --- import your metadata for autogenerate ---
 # Note: Import must be after path setup, so E402 is expected here
 from src.core.database import Base  # noqa: E402
+
 # Import all models to ensure they're registered with Base.metadata
 from src import models  # noqa: E402, F401
 
