@@ -1,11 +1,14 @@
+"""Analytics and metrics routes."""
+
 from datetime import datetime, timedelta, timezone
 from typing import List
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from core.models import Task, TaskStatus, User
-from core.schemas import TaskMetrics, CategoryBreakdown, WeeklyStats
-from core.deps import get_db, get_current_active_user
+
+from ..models import Task, TaskStatus, User
+from ..schemas import TaskMetrics, CategoryBreakdown, WeeklyStats
+from ..core.dependencies import get_db, get_current_active_user
 
 router = APIRouter(prefix="/metrics", tags=["analytics"])
 

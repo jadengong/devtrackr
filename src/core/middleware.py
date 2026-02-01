@@ -1,5 +1,5 @@
 """
-Custom middleware for DevTrackr API
+Custom middleware for DevTrackr API.
 """
 
 import time

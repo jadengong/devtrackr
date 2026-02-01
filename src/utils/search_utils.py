@@ -7,7 +7,8 @@ import re
 from typing import List, Tuple
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-from core.schemas import SearchFilters
+
+from ..schemas import SearchFilters
 
 
 def normalize_search_query(query: str) -> str:

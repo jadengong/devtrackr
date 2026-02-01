@@ -11,10 +11,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Import your app and database components
-from main import app
-from core.db import Base
-from core.deps import get_db, get_current_active_user
-from core.models import User
+from src.main import app
+from src.core.database import Base
+from src.core.dependencies import get_db, get_current_active_user
+from src.core.security import get_password_hash
+from src.models import User, Task, TaskStatus
 
 # Load test database URL from environment
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "sqlite:///./test.db")
@@ -79,8 +80,6 @@ def db_session(db_engine) -> Generator[Session, None, None]:
 @pytest.fixture(scope="function")
 def test_user(db_session) -> User:
     """Create a test user for authentication."""
-    from core.deps import get_password_hash
-
     user = User(
         email="test@example.com",
         username="testuser",
@@ -133,8 +132,6 @@ def sample_task_data():
 @pytest.fixture(scope="function")
 def sample_task(db_session, test_user, sample_task_data):
     """Create a sample task in the database for testing."""
-    from models import Task, TaskStatus
-
     task = Task(
         title=sample_task_data["title"],
         description=sample_task_data["description"],
@@ -153,8 +150,6 @@ def sample_task(db_session, test_user, sample_task_data):
 @pytest.fixture(scope="function")
 def multiple_tasks(db_session, test_user):
     """Create multiple tasks for testing list operations."""
-    from models import Task, TaskStatus
-
     tasks = [
         Task(
             title="Task 1",

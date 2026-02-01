@@ -59,7 +59,7 @@ Issues = "https://github.com/jadengong/devtrackr/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["*"]
+include = ["src*"]
 exclude = ["tests*", "alembic*", ".github*", "htmlcov*", "*.pyc", "__pycache__*"]
 
 [tool.setuptools.package-data]
@@ -119,10 +119,11 @@ testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+pythonpath = ["."]
 addopts = [
     "--strict-markers",
     "--strict-config",
-    "--cov=.",
+    "--cov=src",
     "--cov-report=term-missing",
     "--cov-report=html",
     "--cov-report=xml"

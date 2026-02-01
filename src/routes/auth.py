@@ -1,17 +1,19 @@
+"""Authentication routes."""
+
 from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from core.deps import (
-    get_db,
+
+from ..core.dependencies import get_db, get_current_user
+from ..core.security import (
     get_password_hash,
     verify_password,
     create_access_token,
     ACCESS_TOKEN_EXPIRE_MINUTES,
-    get_current_user,
 )
-from core.models import User
-from core.schemas import UserCreate, UserOut, UserLogin, Token
+from ..models import User
+from ..schemas import UserCreate, UserOut, UserLogin, Token
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 

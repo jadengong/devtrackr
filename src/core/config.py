@@ -1,6 +1,7 @@
 """
-Configuration module for DevTrackr API
-Centralized configuration management using environment variables
+Configuration module for DevTrackr API.
+
+Centralized configuration management using environment variables.
 """
 
 import os

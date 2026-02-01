@@ -29,7 +29,9 @@ except Exception:
 
 # --- import your metadata for autogenerate ---
 # Note: Import must be after path setup, so E402 is expected here
-from core.db import Base  # noqa: E402
+from src.core.database import Base  # noqa: E402
+# Import all models to ensure they're registered with Base.metadata
+from src import models  # noqa: E402, F401
 
 # --- point Alembic at your DB URL (prefer env var over alembic.ini) ---
 database_url = os.getenv("DATABASE_URL")

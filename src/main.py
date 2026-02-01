@@ -12,16 +12,17 @@ from fastapi.responses import JSONResponse
 from uuid import uuid4
 import logging
 from collections import defaultdict
-from routers import tasks as task_router
-from routers import auth as auth_router
-from routers import metrics as metrics_router
-from routers import time_tracking as time_router
-from routers import activity as activity_router
 from datetime import datetime, timezone
-from config import Config
-from config.middleware import RequestTimingMiddleware, SecurityHeadersMiddleware
-from core.db import engine
 from sqlalchemy import text
+
+from .routes import tasks as task_router
+from .routes import auth as auth_router
+from .routes import metrics as metrics_router
+from .routes import time_tracking as time_router
+from .routes import activity as activity_router
+from .core.config import Config
+from .core.middleware import RequestTimingMiddleware, SecurityHeadersMiddleware
+from .core.database import engine
 
 # Create FastAPI app
 app = FastAPI(

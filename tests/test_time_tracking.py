@@ -1,5 +1,5 @@
 from fastapi import status
-from core.models import TimeEntryStatus
+from src.models import TimeEntryStatus
 
 
 class TestTimeTrackingAPI:

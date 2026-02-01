@@ -1,11 +1,14 @@
+"""Task management routes."""
+
 from typing import Optional
 from datetime import datetime
 import time
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from sqlalchemy import select, and_, or_, func, text
-from core.models import Task, TaskStatus, TaskPriority, User
-from core.schemas import (
+
+from ..models import Task, TaskStatus, TaskPriority, User
+from ..schemas import (
     TaskCreate,
     TaskUpdate,
     TaskOut,
@@ -13,15 +16,15 @@ from core.schemas import (
     TaskSearchResponse,
     SearchFilters,
 )
-from core.deps import get_db, get_current_active_user, get_user_task
-from utils.pagination import create_task_cursor, get_pagination_params
-from utils.search_utils import (
+from ..core.dependencies import get_db, get_current_active_user, get_user_task
+from ..utils.pagination import create_task_cursor, get_pagination_params
+from ..utils.search_utils import (
     build_search_query,
     get_search_suggestions,
     normalize_search_query,
     calculate_search_stats,
 )
-from services.activity_logger import ActivityLogger
+from ..services.activity_logger import ActivityLogger
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
@@ -375,8 +378,8 @@ def start_task_timer(
 ):
     """Start timing a task (redirects to new time tracking system)."""
     # Redirect to new time tracking system
-    from routers.time_tracking import start_timer
-    from core.schemas import TimerStart
+    from .time_tracking import start_timer
+    from ..schemas import TimerStart
 
     timer_data = TimerStart(task_id=task.id)
     return start_timer(timer_data, db, current_user)

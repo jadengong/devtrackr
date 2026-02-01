@@ -1,6 +1,7 @@
 """
-Utility functions for DevTrackr API
-Small helper functions that can be used across the application
+Utility functions for DevTrackr API.
+
+Small helper functions that can be used across the application.
 """
 
 import re
