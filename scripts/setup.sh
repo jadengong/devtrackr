@@ -205,7 +205,7 @@ check_health() {
         print_info "Starting server in background for health check..."
         # Start server in background
         source venv/bin/activate
-        nohup uvicorn main:app --host 0.0.0.0 --port 8000 > /dev/null 2>&1 &
+        nohup uvicorn src.main:app --host 0.0.0.0 --port 8000 > /dev/null 2>&1 &
         SERVER_PID=$!
         
         # Wait for server to start
@@ -267,7 +267,7 @@ main() {
     echo "     ${BLUE}source venv/bin/activate${NC}"
     echo ""
     echo "  2. Start the development server:"
-    echo "     ${BLUE}uvicorn main:app --host 0.0.0.0 --port 8000 --reload${NC}"
+    echo "     ${BLUE}uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload${NC}"
     echo ""
     echo "  3. Access the API documentation:"
     echo "     ${BLUE}http://localhost:8000/docs${NC}"

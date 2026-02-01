@@ -206,7 +206,7 @@ python -m pytest --cov=.
 python -m pytest tests/test_tasks_api.py -v
 ```
 
-## 📊 **Features**
+## **Features**
 
 ### **Core Functionality**
 - **Task Management**: Full CRUD operations with priorities, categories, and status tracking

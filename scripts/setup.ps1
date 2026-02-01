@@ -236,7 +236,7 @@ function Test-Health {
         # Start server in background
         $job = Start-Job -ScriptBlock {
             Set-Location $using:PWD
-            & "venv\Scripts\python.exe" -m uvicorn main:app --host 0.0.0.0 --port 8000
+            & "venv\Scripts\python.exe" -m uvicorn src.main:app --host 0.0.0.0 --port 8000
         }
         
         # Wait for server to start
@@ -312,7 +312,7 @@ function Main {
     Write-Host ""
     Write-Host "  2. Start the development server:"
     Write-Host "     " -NoNewline
-    Write-Host "uvicorn main:app --host 0.0.0.0 --port 8000 --reload" -ForegroundColor Cyan
+    Write-Host "uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "  3. Access the API documentation:"
     Write-Host "     " -NoNewline
