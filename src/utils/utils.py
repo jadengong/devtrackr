@@ -95,4 +95,10 @@ def truncate_string(text: str, max_length: int = 100, suffix: str = "...") -> st
     """
     if len(text) <= max_length:
         return text
+
+    # Guard against invalid configuration where max_length is too small
+    if max_length <= len(suffix):
+        # Best-effort: return a slice of the suffix that fits
+        return suffix[:max_length] if max_length > 0 else ""
+
     return text[: max_length - len(suffix)] + suffix
