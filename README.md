@@ -12,7 +12,7 @@ So I built DevTrackr to scratch my own itch - a simple API that does the basics 
 - Time tracking that actually works
 - A way to see what I've been working on
 
-The goal was to keep it focused on the core functionality without all the fuss that come with enterprise task management tools.
+The goal was to keep it focused on the core functionality without all the fuss that comes with enterprise task management tools.
 
 ## **Architecture**
 
