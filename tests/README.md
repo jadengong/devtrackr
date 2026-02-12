@@ -41,6 +41,9 @@ The project includes comprehensive test coverage reporting:
 # Run tests with coverage (default)
 python -m pytest
 
+# Run tests in verbose mode
+python -m pytest -v
+
 # Generate HTML coverage report
 python -m pytest --cov-report=html
 
