@@ -467,4 +467,4 @@ This project is licensed under the MIT License.
 
 ---
 
-**DevTrackr** - A comprehensive, production-ready task management API built with modern Python technologies.
+**DevTrackr** - A comprehensive, production-ready task management API built with modern Python technologies. 
