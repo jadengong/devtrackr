@@ -38,6 +38,8 @@ def format_duration(seconds: int) -> str:
     Returns:
         Formatted duration string (e.g., "2h 30m", "45m", "30s")
     """
+    if seconds < 0:
+        return "0s"
     if seconds < 60:
         return f"{seconds}s"
 
