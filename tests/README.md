@@ -66,3 +66,4 @@ python -m pytest --cov-report=term-missing
 - Each test runs in its own transaction that gets rolled back
 - FastAPI's `get_db` dependency is overridden to use test sessions
 - Uses SQLite by default for fast test execution
+
