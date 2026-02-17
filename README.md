@@ -1,6 +1,6 @@
 # DevTrackr API
 
-A lightweight task management API built with FastAPI. Handles user auth, search, time tracking, and some basic analytics. This README is intended primarily for local development and personal productivity workflows.
+A lightweight, self-hosted task management API built with FastAPI. Handles user auth, search, time tracking, and some basic analytics. This README is intended primarily for local development and personal productivity workflows.
 
 > **Note**: This is a **localhost-only development project**. It's designed to run locally for personal use and development purposes. 
 
@@ -467,4 +467,4 @@ This project is licensed under the MIT License.
 
 ---
 
-**DevTrackr** - A comprehensive, production-ready task management API built with modern Python technologies.
+**DevTrackr** - A comprehensive, production-ready task management API built with modern Python technologies. 
