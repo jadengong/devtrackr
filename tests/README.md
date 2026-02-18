@@ -44,6 +44,9 @@ python -m pytest
 # Run tests in verbose mode
 python -m pytest -v
 
+# Run tests with warnings disabled
+python -m pytest --disable-warnings
+
 # Generate HTML coverage report
 python -m pytest --cov-report=html
 
