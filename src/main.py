@@ -35,7 +35,7 @@ app = FastAPI(
 logging.basicConfig(level=getattr(logging, Config.LOG_LEVEL.upper()))
 logger = logging.getLogger(__name__)
 
-# Use config for API version
+# Use config for API version (cached for performance)
 API_VERSION = Config.API_VERSION
 
 
