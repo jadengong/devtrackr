@@ -29,7 +29,7 @@ dependencies = [
     "sqlalchemy>=2.0.0",
     "psycopg2-binary>=2.9.0",
     "alembic>=1.13.0",
-    "pydantic>=2.11.0",
+    "pydantic[email]>=2.11.0",
     "python-jose[cryptography]>=3.3.0",
     "passlib[bcrypt]>=1.7.0",
     "python-dotenv>=1.0.0",
@@ -130,7 +130,6 @@ addopts = [
     "--cov-fail-under=80",
     "-v",
     "--tb=short",
-    "--cov-omit=manual_tests/*,demos/*,scripts/*,tests/*"
 ]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
