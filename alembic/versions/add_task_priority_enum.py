@@ -29,8 +29,7 @@ def upgrade():
 
     # Convert existing integer priority values to enum values
     # Cast the text values to the enum type
-    op.execute(
-        """
+    op.execute("""
         UPDATE tasks
         SET priority_new = CASE
             WHEN priority <= 2 THEN 'low'::task_priority
@@ -39,8 +38,7 @@ def upgrade():
             WHEN priority >= 5 THEN 'urgent'::task_priority
             ELSE 'medium'::task_priority
         END
-    """
-    )
+    """)
 
     # Set default value for any NULL priorities
     op.execute(
@@ -72,8 +70,7 @@ def downgrade():
     )
 
     # Convert enum values back to integers
-    op.execute(
-        """
+    op.execute("""
         UPDATE tasks
         SET priority = CASE
             WHEN priority = 'low' THEN 2
@@ -82,8 +79,7 @@ def downgrade():
             WHEN priority = 'urgent' THEN 5
             ELSE 3
         END
-    """
-    )
+    """)
 
     # Drop the enum type
     task_priority_enum = postgresql.ENUM(

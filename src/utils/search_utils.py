@@ -106,8 +106,7 @@ def get_search_suggestions(
         return []
 
     # Search for tasks that contain the partial query
-    suggestions_query = text(
-        """
+    suggestions_query = text("""
         SELECT DISTINCT
             CASE
                 WHEN LOWER(t.title) LIKE LOWER(:partial || '%') THEN t.title
@@ -122,8 +121,7 @@ def get_search_suggestions(
         )
         AND LENGTH(COALESCE(t.title, '')) > 0
         LIMIT :limit
-    """
-    )
+    """)
 
     result = db.execute(
         suggestions_query,

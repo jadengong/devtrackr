@@ -12,7 +12,6 @@ and one for trigram-based similarity matching.
 
 from alembic import op
 
-
 # revision identifiers, used by Alembic.
 revision = "add_fulltext_search_index"
 down_revision = "d195cb179a74"  # Links to the time tracking migration
@@ -39,21 +38,17 @@ def upgrade():
 
     # Create a GIN index for full-text search on title and description
     # Uses PostgreSQL's built-in full-text search with tsvector
-    op.execute(
-        """
+    op.execute("""
         CREATE INDEX IF NOT EXISTS idx_tasks_fulltext_search
         ON tasks USING gin(to_tsvector('english', title || ' ' || COALESCE(description, '')))
-    """
-    )
+    """)
 
     # Create a separate index for case-insensitive trigram search
     # Enables fuzzy matching and similarity searches
-    op.execute(
-        """
+    op.execute("""
         CREATE INDEX IF NOT EXISTS idx_tasks_title_description_gin
         ON tasks USING gin((title || ' ' || COALESCE(description, '')) gin_trgm_ops)
-    """
-    )
+    """)
 
 
 def downgrade():
