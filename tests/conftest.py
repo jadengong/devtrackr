@@ -10,12 +10,12 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-# Import your app and database components
-from src.main import app
-from src.core.database import Base
-from src.core.dependencies import get_db, get_current_active_user
-from src.core.security import get_password_hash
-from src.models import User, Task, TaskStatus
+# Import your app and database components (after load_dotenv so config is set)
+from src.main import app  # noqa: E402
+from src.core.database import Base  # noqa: E402
+from src.core.dependencies import get_db, get_current_active_user  # noqa: E402
+from src.core.security import get_password_hash  # noqa: E402
+from src.models import User, Task, TaskStatus  # noqa: E402
 
 # Load test database URL from environment
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "sqlite:///./test.db")

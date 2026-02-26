@@ -22,7 +22,7 @@ from ..core.database import Base
 from .base import ActivityType
 
 if TYPE_CHECKING:
-    from .user import User
+    from .user import User  # noqa: F401
 
 
 class ActivityLog(Base):

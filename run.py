@@ -7,7 +7,7 @@ Usage:
     uvicorn run:app --reload
 """
 
-from src.main import app
+from src.main import app  # noqa: F401 (exposed for uvicorn run:app)
 
 if __name__ == "__main__":
     import uvicorn
