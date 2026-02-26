@@ -2,13 +2,13 @@
 
 A lightweight, self-hosted task management API built with FastAPI. Handles user auth, search, time tracking, and some basic analytics. This README is intended primarily for local development and personal productivity workflows.
 
-> **Note**: This is a **localhost-only development project**. It's designed to run locally for personal use and development purposes. 
+> **Note**: This is a **localhost-only development project**. It's designed to run locally for personal use and development purposes.
 
 I was getting tired of juggling multiple task management tools that either had too many features I didn't need or were missing the ones I actually wanted. Most of them felt overcomplicated for simple project tracking, and the APIs were either non-existent or a pain to work with.
 
 So I built DevTrackr to scratch my own itch - a simple API that does the basics really well. I wanted something that could handle:
 - Quick task creation and updates
-- Decent search without being overengineered  
+- Decent search without being overengineered
 - Time tracking that actually works
 - A way to see what I've been working on
 
@@ -114,7 +114,7 @@ If you prefer to set up manually or the automated script doesn't work for your e
    ```bash
    # Start PostgreSQL using Docker Compose
    docker-compose up -d db
-   
+
    # Verify database is running
    docker ps
    ```
@@ -123,13 +123,13 @@ If you prefer to set up manually or the automated script doesn't work for your e
    ```bash
    # Create virtual environment (recommended)
    python -m venv venv
-   
+
    # Activate virtual environment
    # On Windows:
    venv\Scripts\activate
    # On macOS/Linux:
    source venv/bin/activate
-   
+
    # Install dependencies
    pip install -r requirements.txt
    ```
@@ -467,4 +467,4 @@ This project is licensed under the MIT License.
 
 ---
 
-**DevTrackr** - A comprehensive, production-ready task management API built with modern Python technologies. 
+**DevTrackr** - A comprehensive, production-ready task management API built with modern Python technologies.

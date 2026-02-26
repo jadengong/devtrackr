@@ -39,42 +39,42 @@ function Test-Command {
 # Check Python version
 function Test-Python {
     Write-Step "Checking Python installation..."
-    
+
     if (-not (Test-Command "python")) {
         Write-Error "Python is not installed or not in PATH"
         Write-Host "Please install Python 3.11 or higher from https://www.python.org/"
         exit 1
     }
-    
+
     $pythonVersion = python --version 2>&1
     $versionMatch = $pythonVersion -match "Python (\d+)\.(\d+)"
-    
+
     if (-not $versionMatch) {
         Write-Error "Could not determine Python version"
         exit 1
     }
-    
+
     $major = [int]$matches[1]
     $minor = [int]$matches[2]
-    
+
     if ($major -lt 3 -or ($major -eq 3 -and $minor -lt 11)) {
         Write-Error "Python 3.11 or higher is required. Found: $pythonVersion"
         exit 1
     }
-    
+
     Write-Success "Python $pythonVersion found"
 }
 
 # Check Docker
 function Test-Docker {
     Write-Step "Checking Docker installation..."
-    
+
     if (-not (Test-Command "docker")) {
         Write-Error "Docker is not installed"
         Write-Host "Please install Docker Desktop from https://www.docker.com/get-started"
         exit 1
     }
-    
+
     try {
         docker info | Out-Null
         Write-Success "Docker is installed and running"
@@ -88,10 +88,10 @@ function Test-Docker {
 # Check Docker Compose
 function Test-DockerCompose {
     Write-Step "Checking Docker Compose..."
-    
+
     # Try docker compose (newer) first, then docker-compose (older)
     $dockerComposeCmd = $null
-    
+
     try {
         docker compose version | Out-Null
         $script:DockerComposeCmd = "docker compose"
@@ -111,7 +111,7 @@ function Test-DockerCompose {
 # Check Git
 function Test-Git {
     Write-Step "Checking Git installation..."
-    
+
     if (-not (Test-Command "git")) {
         Write-Warning "Git is not installed (optional but recommended)"
     } else {
@@ -122,14 +122,14 @@ function Test-Git {
 # Create virtual environment
 function Initialize-Venv {
     Write-Step "Setting up Python virtual environment..."
-    
+
     if (Test-Path "venv") {
         Write-Info "Virtual environment already exists, skipping creation"
     } else {
         python -m venv venv
         Write-Success "Virtual environment created"
     }
-    
+
     # Activate virtual environment
     & "venv\Scripts\Activate.ps1"
     Write-Success "Virtual environment activated"
@@ -138,11 +138,11 @@ function Initialize-Venv {
 # Install dependencies
 function Install-Dependencies {
     Write-Step "Installing Python dependencies..."
-    
+
     # Upgrade pip
     python -m pip install --upgrade pip --quiet
     Write-Success "pip upgraded"
-    
+
     # Install requirements
     if (Test-Path "requirements.txt") {
         pip install -r requirements.txt --quiet
@@ -151,7 +151,7 @@ function Install-Dependencies {
         Write-Error "requirements.txt not found"
         exit 1
     }
-    
+
     # Verify critical packages
     try {
         python -c "import fastapi, sqlalchemy, alembic" 2>&1 | Out-Null
@@ -165,23 +165,23 @@ function Install-Dependencies {
 # Start database
 function Start-Database {
     Write-Step "Starting PostgreSQL database..."
-    
+
     # Check if container is already running
     $containerRunning = docker ps --format '{{.Names}}' | Select-String -Pattern "^devtrackr-db$"
-    
+
     if ($containerRunning) {
         Write-Info "Database container is already running"
     } else {
         # Start database
         Invoke-Expression "$DockerComposeCmd up -d db"
         Write-Success "Database container started"
-        
+
         # Wait for database to be healthy
         Write-Info "Waiting for database to be ready..."
         $maxAttempts = 30
         $attempt = 0
         $ready = $false
-        
+
         while ($attempt -lt $maxAttempts -and -not $ready) {
             try {
                 docker exec devtrackr-db pg_isready -U dev -d devtrackr 2>&1 | Out-Null
@@ -192,13 +192,13 @@ function Start-Database {
             } catch {
                 # Continue waiting
             }
-            
+
             if (-not $ready) {
                 $attempt++
                 Start-Sleep -Seconds 1
             }
         }
-        
+
         if (-not $ready) {
             Write-Error "Database failed to become ready after $maxAttempts seconds"
             exit 1
@@ -209,7 +209,7 @@ function Start-Database {
 # Run migrations
 function Invoke-Migrations {
     Write-Step "Running database migrations..."
-    
+
     try {
         python -m alembic upgrade head
         Write-Success "Database migrations completed"
@@ -223,27 +223,27 @@ function Invoke-Migrations {
 # Check health endpoint
 function Test-Health {
     Write-Step "Verifying API health..."
-    
+
     # Check if port 8000 is already in use
     $portInUse = Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue
-    
+
     if ($portInUse) {
         Write-Warning "Port 8000 is already in use"
         Write-Info "Assuming server is already running, testing health endpoint..."
     } else {
         Write-Info "Starting server in background for health check..."
-        
+
         # Start server in background
         $job = Start-Job -ScriptBlock {
             Set-Location $using:PWD
             & "venv\Scripts\python.exe" -m uvicorn src.main:app --host 0.0.0.0 --port 8000
         }
-        
+
         # Wait for server to start
         $maxAttempts = 15
         $attempt = 0
         $healthy = $false
-        
+
         while ($attempt -lt $maxAttempts -and -not $healthy) {
             Start-Sleep -Seconds 1
             try {
@@ -257,17 +257,17 @@ function Test-Health {
             }
             $attempt++
         }
-        
+
         # Stop background job
         Stop-Job $job -ErrorAction SilentlyContinue
         Remove-Job $job -ErrorAction SilentlyContinue
-        
+
         if (-not $healthy) {
             Write-Warning "Could not verify server health (server may need to be started manually)"
             return
         }
     }
-    
+
     # Test health endpoint
     try {
         $response = Invoke-WebRequest -Uri "http://localhost:8000/health" -TimeoutSec 2 -ErrorAction SilentlyContinue
@@ -287,7 +287,7 @@ function Main {
     Write-Host "║     Automated Environment Setup        ║" -ForegroundColor Cyan
     Write-Host "╚════════════════════════════════════════╝" -ForegroundColor Cyan
     Write-Host ""
-    
+
     # Run all checks and setup steps
     Test-Python
     Test-Docker
@@ -298,7 +298,7 @@ function Main {
     Start-Database
     Invoke-Migrations
     Test-Health
-    
+
     # Success message
     Write-Host "`n"
     Write-Host "╔════════════════════════════════════════╗" -ForegroundColor Green

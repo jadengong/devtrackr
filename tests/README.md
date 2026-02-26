@@ -27,7 +27,7 @@ def test_example(client, db_session):
     # Use client for HTTP requests
     response = client.get("/")
     assert response.status_code == 200
-    
+
     # Use db_session for database operations
     # Changes are automatically rolled back after each test
 ```
@@ -69,4 +69,3 @@ python -m pytest --cov-report=term-missing
 - Each test runs in its own transaction that gets rolled back
 - FastAPI's `get_db` dependency is overridden to use test sessions
 - Uses SQLite by default for fast test execution
-
