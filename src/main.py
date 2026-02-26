@@ -288,9 +288,7 @@ def get_stats():
                 reverse=True,
             )[:10]
         ),
-        "uptime_seconds": int(
-            (datetime.now(UTC) - START_TIME).total_seconds()
-        ),
+        "uptime_seconds": int((datetime.now(UTC) - START_TIME).total_seconds()),
         "timestamp": datetime.now(UTC).isoformat(),
     }
 

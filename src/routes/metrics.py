@@ -251,7 +251,9 @@ def get_productivity_trends(
         trend_direction = (
             "improving"
             if last_week_avg > first_week_avg
-            else "declining" if last_week_avg < first_week_avg else "stable"
+            else "declining"
+            if last_week_avg < first_week_avg
+            else "stable"
         )
         trend_percentage = (
             ((last_week_avg - first_week_avg) / first_week_avg * 100)
