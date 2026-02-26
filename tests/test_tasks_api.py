@@ -191,3 +191,38 @@ class TestTasksAPI:
         assert all(
             task["status"] == "in_progress" for task in in_progress_response["items"]
         )
+
+    def test_unarchive_task(self, client, db_session):
+        """Test POST /tasks/{id}/unarchive restores an archived task."""
+        response = client.post("/tasks", json={"title": "To Archive and Restore"})
+        assert response.status_code == status.HTTP_201_CREATED
+        task = response.json()
+        task_id = task["id"]
+        assert task["is_archived"] is False
+
+        response = client.delete(f"/tasks/{task_id}")
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+        response = client.get(f"/tasks/{task_id}")
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["is_archived"] is True
+
+        response = client.post(f"/tasks/{task_id}/unarchive")
+        assert response.status_code == status.HTTP_200_OK
+        restored = response.json()
+        assert restored["id"] == task_id
+        assert restored["is_archived"] is False
+
+        response = client.get(f"/tasks/{task_id}")
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["is_archived"] is False
+
+    def test_unarchive_non_archived_task_fails(self, client, db_session):
+        """POST /tasks/{id}/unarchive on non-archived task returns 400."""
+        response = client.post("/tasks", json={"title": "Not Archived"})
+        assert response.status_code == status.HTTP_201_CREATED
+        task_id = response.json()["id"]
+
+        response = client.post(f"/tasks/{task_id}/unarchive")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "not archived" in response.json().get("detail", "").lower()

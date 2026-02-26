@@ -13,7 +13,11 @@ load_dotenv()
 
 # Import your app and database components (after load_dotenv so config is set)
 from src.core.database import Base  # noqa: E402
-from src.core.dependencies import get_current_active_user, get_db  # noqa: E402
+from src.core.dependencies import (  # noqa: E402
+    get_current_active_user,
+    get_current_user,
+    get_db,
+)
 from src.core.security import get_password_hash  # noqa: E402
 from src.main import app  # noqa: E402
 from src.models import Task, TaskStatus, User  # noqa: E402
@@ -105,12 +109,17 @@ def client(db_session, test_user) -> Generator[TestClient, None, None]:
         finally:
             pass  # Don't close the session here, it's managed by the fixture
 
+    def override_get_current_user():
+        """Override JWT auth to return our test user."""
+        return test_user
+
     def override_get_current_active_user():
-        """Override authentication to return our test user."""
+        """Override active user to return our test user."""
         return test_user
 
     # Override the dependencies
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_current_user] = override_get_current_user
     app.dependency_overrides[get_current_active_user] = override_get_current_active_user
 
     with TestClient(app) as test_client:
