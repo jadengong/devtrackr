@@ -4,17 +4,17 @@ Models package.
 Re-exports all models and enums for convenient importing.
 """
 
+from .activity import ActivityLog
 from .base import (
-    Base,
-    TaskStatus,
-    TaskPriority,
-    TimeEntryStatus,
     ActivityType,
+    Base,
+    TaskPriority,
+    TaskStatus,
+    TimeEntryStatus,
 )
-from .user import User
 from .task import Task
 from .time_entry import TimeEntry
-from .activity import ActivityLog
+from .user import User
 
 __all__ = [
     # Base and enums

@@ -5,15 +5,15 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Integer, String, Boolean, DateTime, func
+from sqlalchemy import Boolean, DateTime, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..core.database import Base
 
 if TYPE_CHECKING:
+    from .activity import ActivityLog
     from .task import Task
     from .time_entry import TimeEntry
-    from .activity import ActivityLog
 
 
 class User(Base):
@@ -33,17 +33,17 @@ class User(Base):
     )
 
     # Relationship to tasks
-    tasks: Mapped[list["Task"]] = relationship(
+    tasks: Mapped[list[Task]] = relationship(
         "Task", back_populates="owner", cascade="all, delete-orphan"
     )
 
     # Relationship to time entries
-    time_entries: Mapped[list["TimeEntry"]] = relationship(
+    time_entries: Mapped[list[TimeEntry]] = relationship(
         "TimeEntry", back_populates="owner", cascade="all, delete-orphan"
     )
 
     # Relationship to activity logs
-    activity_logs: Mapped[list["ActivityLog"]] = relationship(
+    activity_logs: Mapped[list[ActivityLog]] = relationship(
         "ActivityLog", back_populates="user", cascade="all, delete-orphan"
     )
 

@@ -5,7 +5,6 @@ Centralized configuration management using environment variables.
 """
 
 import os
-from typing import List
 
 
 class Config:
@@ -40,7 +39,7 @@ class Config:
     RATE_LIMIT = int(os.getenv("RATE_LIMIT", "100"))
 
     @classmethod
-    def get_cors_origins(cls) -> List[str]:
+    def get_cors_origins(cls) -> list[str]:
         """Get CORS origins, handling wildcard properly"""
         if cls.ALLOWED_ORIGINS == ["*"]:
             return ["*"]

@@ -6,20 +6,20 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
+    Boolean,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Index,
     Integer,
     String,
     Text,
-    DateTime,
-    Enum,
-    Boolean,
-    Index,
     func,
-    ForeignKey,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..core.database import Base
-from .base import TaskStatus, TaskPriority
+from .base import TaskPriority, TaskStatus
 
 if TYPE_CHECKING:
     from .user import User
@@ -69,7 +69,7 @@ class Task(Base):
     owner_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("users.id"), nullable=False, index=True
     )
-    owner: Mapped["User"] = relationship("User", back_populates="tasks")
+    owner: Mapped[User] = relationship("User", back_populates="tasks")
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

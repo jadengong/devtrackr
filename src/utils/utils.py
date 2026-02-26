@@ -5,7 +5,7 @@ Small helper functions that can be used across the application.
 """
 
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 
 def generate_slug(text: str) -> str:
@@ -80,7 +80,7 @@ def get_current_timestamp() -> str:
     Returns:
         Current timestamp as ISO string
     """
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def truncate_string(text: str, max_length: int = 100, suffix: str = "...") -> str:

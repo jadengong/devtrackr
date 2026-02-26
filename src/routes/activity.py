@@ -2,25 +2,25 @@
 Activity log router for tracking and retrieving user activities.
 """
 
-from typing import Optional
-from datetime import datetime, timedelta, timezone
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
-from sqlalchemy import select, func, and_
+from datetime import UTC, datetime, timedelta
 
-from ..core.dependencies import get_db, get_current_active_user
-from ..models import User, ActivityLog, ActivityType
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy import and_, func, select
+from sqlalchemy.orm import Session
+
+from ..core.dependencies import get_current_active_user, get_db
+from ..models import ActivityLog, ActivityType, User
 from ..schemas import ActivityLogListResponse
-from ..utils.pagination import get_pagination_params, create_task_cursor
+from ..utils.pagination import create_task_cursor, get_pagination_params
 
 router = APIRouter()
 
 
 @router.get("/activity", response_model=ActivityLogListResponse)
 def get_activity_log(
-    cursor: Optional[str] = Query(None, description="Cursor for pagination"),
+    cursor: str | None = Query(None, description="Cursor for pagination"),
     limit: int = Query(20, ge=1, le=100, description="Number of activities per page"),
-    activity_type: Optional[ActivityType] = Query(
+    activity_type: ActivityType | None = Query(
         None, description="Filter by activity type"
     ),
     include_total: bool = Query(
@@ -96,7 +96,7 @@ def get_activity_summary(
     """Get activity summary for the current user."""
 
     # Calculate date range
-    end_date = datetime.now(timezone.utc)
+    end_date = datetime.now(UTC)
     start_date = end_date - timedelta(days=days)
 
     # Get activity counts by type

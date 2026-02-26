@@ -2,19 +2,19 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone as tz
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
+    JSON,
+    Column,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Index,
     Integer,
     String,
     Text,
-    DateTime,
-    Enum,
-    Index,
-    ForeignKey,
-    JSON,
-    Column,
 )
 from sqlalchemy.orm import relationship
 
@@ -41,7 +41,7 @@ class ActivityLog(Base):
     )  # Additional data (old values, etc.)
     created_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(tz.utc),
+        default=lambda: datetime.now(UTC),
         nullable=False,
         index=True,
     )

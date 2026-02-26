@@ -4,30 +4,31 @@ Base model configuration and enums.
 Provides the SQLAlchemy Base class and shared enumerations.
 """
 
-import enum
+from enum import StrEnum
+
 from ..core.database import Base
 
 
-class TaskStatus(str, enum.Enum):
+class TaskStatus(StrEnum):
     todo = "todo"
     in_progress = "in_progress"
     done = "done"
 
 
-class TaskPriority(str, enum.Enum):
+class TaskPriority(StrEnum):
     low = "low"
     medium = "medium"
     high = "high"
     urgent = "urgent"
 
 
-class TimeEntryStatus(str, enum.Enum):
+class TimeEntryStatus(StrEnum):
     active = "active"
     paused = "paused"
     completed = "completed"
 
 
-class ActivityType(str, enum.Enum):
+class ActivityType(StrEnum):
     """Activity types for the activity log."""
 
     TASK_CREATED = "task_created"

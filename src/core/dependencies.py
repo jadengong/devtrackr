@@ -6,13 +6,13 @@ Provides database session, authentication, and authorization dependencies.
 
 from collections.abc import Generator
 
-from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.orm import Session
 
+from ..models import Task, User
 from .database import SessionLocal
-from .security import verify_token, get_password_hash, verify_password
-from ..models import User, Task
+from .security import get_password_hash, verify_password, verify_token
 
 # JWT token bearer
 security = HTTPBearer()

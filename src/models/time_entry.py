@@ -6,14 +6,14 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
+    DateTime,
+    Enum,
+    ForeignKey,
+    Index,
     Integer,
     String,
     Text,
-    DateTime,
-    Enum,
-    Index,
     func,
-    ForeignKey,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -21,8 +21,8 @@ from ..core.database import Base
 from .base import TimeEntryStatus
 
 if TYPE_CHECKING:
-    from .user import User
     from .task import Task
+    from .user import User
 
 
 class TimeEntry(Base):
@@ -32,7 +32,7 @@ class TimeEntry(Base):
     task_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("tasks.id"), nullable=False, index=True
     )
-    task: Mapped["Task"] = relationship("Task")
+    task: Mapped[Task] = relationship("Task")
 
     # Time tracking fields
     start_time: Mapped[datetime] = mapped_column(
@@ -58,7 +58,7 @@ class TimeEntry(Base):
     owner_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("users.id"), nullable=False, index=True
     )
-    owner: Mapped["User"] = relationship("User")
+    owner: Mapped[User] = relationship("User")
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

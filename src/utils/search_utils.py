@@ -2,9 +2,9 @@
 Search utilities for full-text search functionality.
 """
 
-import time
 import re
-from typing import List, Tuple
+import time
+
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -30,7 +30,7 @@ def normalize_search_query(query: str) -> str:
 
 def build_search_query(
     query: str, filters: SearchFilters, user_id: int
-) -> Tuple[str, dict]:
+) -> tuple[str, dict]:
     """
     Build PostgreSQL full-text search query with filters.
 
@@ -98,7 +98,7 @@ def build_search_query(
 
 def get_search_suggestions(
     db: Session, user_id: int, partial_query: str, limit: int = 5
-) -> List[str]:
+) -> list[str]:
     """
     Get search suggestions based on existing task titles and descriptions.
     """
@@ -141,7 +141,7 @@ def get_search_suggestions(
     return list(dict.fromkeys(suggestions))[:limit]
 
 
-def extract_search_terms(query: str) -> List[str]:
+def extract_search_terms(query: str) -> list[str]:
     """
     Extract meaningful search terms from the query for suggestions.
     """

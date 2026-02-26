@@ -1,21 +1,21 @@
 """Time tracking routes."""
 
-from datetime import datetime, timedelta, timezone
-from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.orm import Session
-from sqlalchemy import select, func, and_
+from datetime import UTC, datetime, timedelta
 
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import and_, func, select
+from sqlalchemy.orm import Session
+
+from ..core.dependencies import get_current_active_user, get_db
 from ..models import Task, TimeEntry, TimeEntryStatus, User
 from ..schemas import (
-    TimeEntryUpdate,
+    ActiveTimer,
     TimeEntryOut,
+    TimeEntryUpdate,
     TimerStart,
     TimerStop,
-    ActiveTimer,
     TimeSummary,
 )
-from ..core.dependencies import get_db, get_current_active_user
 
 router = APIRouter(prefix="/time", tags=["time-tracking"])
 
@@ -57,7 +57,7 @@ def start_timer(
     time_entry = TimeEntry(
         task_id=timer_data.task_id,
         owner_id=current_user.id,
-        start_time=datetime.now(timezone.utc),
+        start_time=datetime.now(UTC),
         description=timer_data.description,
         category=timer_data.category,
         status=TimeEntryStatus.active,
@@ -72,7 +72,7 @@ def start_timer(
 @router.post("/stop/{time_entry_id}", response_model=TimeEntryOut)
 def stop_timer(
     time_entry_id: int,
-    timer_data: Optional[TimerStop] = None,
+    timer_data: TimerStop | None = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
@@ -90,11 +90,11 @@ def stop_timer(
         raise HTTPException(status_code=400, detail="Timer is not active")
 
     # Calculate duration
-    end_time = datetime.now(timezone.utc)
+    end_time = datetime.now(UTC)
     # Ensure start_time is timezone-aware for comparison
     start_time = time_entry.start_time
     if start_time.tzinfo is None:
-        start_time = start_time.replace(tzinfo=timezone.utc)
+        start_time = start_time.replace(tzinfo=UTC)
     duration_minutes = int((end_time - start_time).total_seconds() / 60)
 
     # Update time entry
@@ -121,7 +121,7 @@ def stop_timer(
     return time_entry
 
 
-@router.get("/active", response_model=Optional[ActiveTimer])
+@router.get("/active", response_model=ActiveTimer | None)
 def get_active_timer(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
@@ -140,10 +140,10 @@ def get_active_timer(
         return None
 
     # Calculate elapsed time
-    current_time = datetime.now(timezone.utc)
+    current_time = datetime.now(UTC)
     start_time = active_timer.start_time
     if start_time.tzinfo is None:
-        start_time = start_time.replace(tzinfo=timezone.utc)
+        start_time = start_time.replace(tzinfo=UTC)
     elapsed_minutes = int((current_time - start_time).total_seconds() / 60)
 
     return ActiveTimer(
@@ -157,12 +157,12 @@ def get_active_timer(
     )
 
 
-@router.get("/entries", response_model=List[TimeEntryOut])
+@router.get("/entries", response_model=list[TimeEntryOut])
 def list_time_entries(
-    task_id: Optional[int] = Query(None, description="Filter by task ID"),
-    category: Optional[str] = Query(None, description="Filter by category"),
-    date_from: Optional[datetime] = Query(None, description="Filter from date"),
-    date_to: Optional[datetime] = Query(None, description="Filter to date"),
+    task_id: int | None = Query(None, description="Filter by task ID"),
+    category: str | None = Query(None, description="Filter by category"),
+    date_from: datetime | None = Query(None, description="Filter from date"),
+    date_to: datetime | None = Query(None, description="Filter to date"),
     limit: int = Query(50, ge=1, le=100, description="Number of entries to return"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
@@ -195,7 +195,7 @@ def get_time_summary(
     current_user: User = Depends(get_current_active_user),
 ):
     """Get time tracking summary for the specified period."""
-    end_date = datetime.now(timezone.utc)
+    end_date = datetime.now(UTC)
     start_date = end_date - timedelta(days=days)
 
     # Get total time and entries in period
@@ -302,9 +302,9 @@ def update_time_entry(
         end_time = time_entry.end_time
         start_time = time_entry.start_time
         if start_time.tzinfo is None:
-            start_time = start_time.replace(tzinfo=timezone.utc)
+            start_time = start_time.replace(tzinfo=UTC)
         if end_time.tzinfo is None:
-            end_time = end_time.replace(tzinfo=timezone.utc)
+            end_time = end_time.replace(tzinfo=UTC)
         duration_minutes = int((end_time - start_time).total_seconds() / 60)
         time_entry.duration_minutes = duration_minutes
 

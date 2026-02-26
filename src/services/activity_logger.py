@@ -2,8 +2,9 @@
 Activity logging service for tracking user actions.
 """
 
-from datetime import datetime, timezone
-from typing import Optional, Dict, Any
+from datetime import UTC, datetime
+from typing import Any
+
 from sqlalchemy.orm import Session
 
 from ..models import ActivityLog, ActivityType
@@ -18,9 +19,9 @@ class ActivityLogger:
         user_id: int,
         activity_type: ActivityType,
         entity_type: str,
-        entity_id: Optional[int],
+        entity_id: int | None,
         description: str,
-        activity_metadata: Optional[Dict[str, Any]] = None,
+        activity_metadata: dict[str, Any] | None = None,
     ) -> ActivityLog:
         """
         Log an activity for a user.
@@ -44,7 +45,7 @@ class ActivityLogger:
             entity_id=entity_id,
             description=description,
             activity_metadata=activity_metadata or {},
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
 
         db.add(activity)
@@ -77,7 +78,7 @@ class ActivityLogger:
         user_id: int,
         task_id: int,
         task_title: str,
-        changes: Dict[str, Any],
+        changes: dict[str, Any],
     ) -> ActivityLog:
         """Log task updates."""
         changed_fields = list(changes.keys())

@@ -4,11 +4,7 @@ Routes package.
 Contains all API route definitions.
 """
 
-from . import auth
-from . import tasks
-from . import metrics
-from . import time_tracking
-from . import activity
+from . import activity, auth, metrics, tasks, time_tracking
 
 __all__ = [
     "auth",

@@ -1,21 +1,22 @@
 import os
+from collections.abc import Generator
+
 import pytest
-from typing import Generator
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy.pool import StaticPool
-from fastapi.testclient import TestClient
 from dotenv import load_dotenv
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import StaticPool
 
 # Load environment variables from .env file
 load_dotenv()
 
 # Import your app and database components (after load_dotenv so config is set)
-from src.main import app  # noqa: E402
 from src.core.database import Base  # noqa: E402
-from src.core.dependencies import get_db, get_current_active_user  # noqa: E402
+from src.core.dependencies import get_current_active_user, get_db  # noqa: E402
 from src.core.security import get_password_hash  # noqa: E402
-from src.models import User, Task, TaskStatus  # noqa: E402
+from src.main import app  # noqa: E402
+from src.models import Task, TaskStatus, User  # noqa: E402
 
 # Load test database URL from environment
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "sqlite:///./test.db")

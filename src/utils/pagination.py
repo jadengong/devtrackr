@@ -4,17 +4,17 @@ Pagination utilities for cursor-based pagination.
 
 import base64
 import json
-from typing import Any, Dict, Optional, Tuple
 from datetime import datetime
+from typing import Any
 
 
-def encode_cursor(data: Dict[str, Any]) -> str:
+def encode_cursor(data: dict[str, Any]) -> str:
     """Encode cursor data to a base64 string."""
     json_str = json.dumps(data, default=str)
     return base64.b64encode(json_str.encode()).decode()
 
 
-def decode_cursor(cursor: str) -> Optional[Dict[str, Any]]:
+def decode_cursor(cursor: str) -> dict[str, Any] | None:
     """Decode cursor string to data dictionary."""
     try:
         json_str = base64.b64decode(cursor.encode()).decode()
@@ -28,7 +28,7 @@ def create_task_cursor(task_id: int, created_at: datetime) -> str:
     return encode_cursor({"id": task_id, "created_at": created_at.isoformat()})
 
 
-def parse_task_cursor(cursor: str) -> Tuple[Optional[int], Optional[datetime]]:
+def parse_task_cursor(cursor: str) -> tuple[int | None, datetime | None]:
     """Parse task cursor to extract ID and creation time."""
     data = decode_cursor(cursor)
     if not data:
@@ -48,8 +48,8 @@ def parse_task_cursor(cursor: str) -> Tuple[Optional[int], Optional[datetime]]:
 
 
 def get_pagination_params(
-    cursor: Optional[str] = None, limit: int = 20
-) -> Tuple[Optional[int], Optional[datetime], int]:
+    cursor: str | None = None, limit: int = 20
+) -> tuple[int | None, datetime | None, int]:
     """
     Parse pagination parameters.
 

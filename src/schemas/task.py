@@ -1,24 +1,23 @@
 """Task-related schemas."""
 
 from datetime import datetime
-from typing import Optional, List
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ..models.base import TaskStatus, TaskPriority
+from ..models.base import TaskPriority, TaskStatus
 
 
 class TaskBase(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
 
     title: str = Field(..., max_length=200)
-    description: Optional[str] = None
-    category: Optional[str] = Field(None, max_length=100)
-    status: Optional[TaskStatus] = None
-    priority: Optional[TaskPriority] = TaskPriority.medium
-    due_date: Optional[datetime] = None
-    estimated_minutes: Optional[int] = Field(None, ge=1)  # Minimum 1 minute
-    actual_minutes: Optional[int] = Field(None, ge=0)  # Minimum 0 minutes
+    description: str | None = None
+    category: str | None = Field(None, max_length=100)
+    status: TaskStatus | None = None
+    priority: TaskPriority | None = TaskPriority.medium
+    due_date: datetime | None = None
+    estimated_minutes: int | None = Field(None, ge=1)  # Minimum 1 minute
+    actual_minutes: int | None = Field(None, ge=0)  # Minimum 0 minutes
 
 
 class TaskCreate(TaskBase):
@@ -28,15 +27,15 @@ class TaskCreate(TaskBase):
 class TaskUpdate(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
 
-    title: Optional[str] = None
-    description: Optional[str] = None
-    category: Optional[str] = Field(None, max_length=100)
-    status: Optional[TaskStatus] = None
-    priority: Optional[TaskPriority] = None
-    due_date: Optional[datetime] = None
-    estimated_minutes: Optional[int] = Field(None, ge=1)
-    actual_minutes: Optional[int] = Field(None, ge=0)
-    is_archived: Optional[bool] = None
+    title: str | None = None
+    description: str | None = None
+    category: str | None = Field(None, max_length=100)
+    status: TaskStatus | None = None
+    priority: TaskPriority | None = None
+    due_date: datetime | None = None
+    estimated_minutes: int | None = Field(None, ge=1)
+    actual_minutes: int | None = Field(None, ge=0)
+    is_archived: bool | None = None
 
 
 class TaskOut(TaskBase):
@@ -52,20 +51,20 @@ class TaskOut(TaskBase):
 class TaskListResponse(BaseModel):
     """Paginated task list response"""
 
-    items: List[TaskOut]
-    next_cursor: Optional[str] = None
+    items: list[TaskOut]
+    next_cursor: str | None = None
     has_next: bool = False
-    total_count: Optional[int] = None
+    total_count: int | None = None
 
 
 class TaskSearchResponse(BaseModel):
     """Search results response"""
 
-    items: List[TaskOut]
+    items: list[TaskOut]
     query: str
     total_matches: int
     search_time_ms: float
-    suggestions: Optional[List[str]] = None
+    suggestions: list[str] | None = None
 
 
 class SearchFilters(BaseModel):
@@ -73,11 +72,11 @@ class SearchFilters(BaseModel):
 
     model_config = ConfigDict(str_strip_whitespace=True)
 
-    status: Optional[TaskStatus] = None
-    category: Optional[str] = None
-    priority: Optional[TaskPriority] = None
-    created_after: Optional[datetime] = None
-    created_before: Optional[datetime] = None
-    due_after: Optional[datetime] = None
-    due_before: Optional[datetime] = None
-    archived: Optional[bool] = None
+    status: TaskStatus | None = None
+    category: str | None = None
+    priority: TaskPriority | None = None
+    created_after: datetime | None = None
+    created_before: datetime | None = None
+    due_after: datetime | None = None
+    due_before: datetime | None = None
+    archived: bool | None = None

@@ -10,8 +10,9 @@ Usage:
 from src.main import app  # noqa: F401 (exposed for uvicorn run:app)
 
 if __name__ == "__main__":
-    import uvicorn
     import os
+
+    import uvicorn
 
     host = os.getenv("DEVTRACKR_HOST", "127.0.0.1")
     port = int(os.getenv("DEVTRACKR_PORT", "8000"))

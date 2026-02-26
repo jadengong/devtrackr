@@ -41,8 +41,7 @@ dependencies = [
 dev = [
     "pytest>=8.4.0",
     "pytest-cov>=6.2.0",
-    "black>=23.0.0",
-    "flake8>=6.0.0",
+    "ruff>=0.8.0",
     "mypy>=1.0.0",
     "bandit>=1.7.0",
     "safety>=2.0.0",
@@ -100,6 +99,28 @@ exclude = [
     ".pytest_cache",
     "alembic/versions"
 ]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "venv",
+    "build",
+    "dist",
+    "htmlcov",
+    ".pytest_cache",
+    "alembic/versions",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
 
 [tool.mypy]
 python_version = "3.11"
@@ -165,4 +186,9 @@ exclude_lines = [
     "if __name__ == .__main__.:",
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod"
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.2",
 ]

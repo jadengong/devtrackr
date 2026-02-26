@@ -1,14 +1,14 @@
 """Analytics and metrics routes."""
 
-from datetime import datetime, timedelta, timezone
-from typing import List
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
-from sqlalchemy import func
+from datetime import UTC, datetime, timedelta
 
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy import func
+from sqlalchemy.orm import Session
+
+from ..core.dependencies import get_current_active_user, get_db
 from ..models import Task, TaskStatus, User
-from ..schemas import TaskMetrics, CategoryBreakdown, WeeklyStats
-from ..core.dependencies import get_db, get_current_active_user
+from ..schemas import CategoryBreakdown, TaskMetrics, WeeklyStats
 
 router = APIRouter(prefix="/metrics", tags=["analytics"])
 
@@ -56,7 +56,7 @@ def get_task_summary(
     )
 
 
-@router.get("/categories", response_model=List[CategoryBreakdown])
+@router.get("/categories", response_model=list[CategoryBreakdown])
 def get_category_breakdown(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)
 ):
@@ -90,7 +90,7 @@ def get_category_breakdown(
     ]
 
 
-@router.get("/weekly", response_model=List[WeeklyStats])
+@router.get("/weekly", response_model=list[WeeklyStats])
 def get_weekly_stats(
     weeks: int = Query(4, ge=1, le=12, description="Number of weeks to analyze"),
     db: Session = Depends(get_db),
@@ -99,7 +99,7 @@ def get_weekly_stats(
     """Get weekly productivity statistics for the specified number of weeks."""
 
     weekly_stats = []
-    today = datetime.now(timezone.utc)
+    today = datetime.now(UTC)
 
     for week_offset in range(weeks):
         # Calculate week boundaries
@@ -226,7 +226,7 @@ def get_productivity_trends(
         .filter(
             Task.owner_id == current_user.id,
             Task.status == TaskStatus.done,
-            Task.updated_at >= datetime.now(timezone.utc) - timedelta(days=days),
+            Task.updated_at >= datetime.now(UTC) - timedelta(days=days),
             Task.is_archived.is_(False),
         )
         .group_by(func.date(Task.updated_at))

@@ -3,11 +3,12 @@ from __future__ import annotations
 
 import os
 import sys
-from pathlib import Path
 from logging.config import fileConfig
+from pathlib import Path
+
+from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-from sqlalchemy import engine_from_config, pool
 
 # --- logging from alembic.ini ---
 config = context.config
@@ -29,10 +30,9 @@ except Exception:
 
 # --- import your metadata for autogenerate ---
 # Note: Import must be after path setup, so E402 is expected here
-from src.core.database import Base  # noqa: E402
-
 # Import all models to ensure they're registered with Base.metadata
 from src import models  # noqa: E402, F401
+from src.core.database import Base  # noqa: E402
 
 # --- point Alembic at your DB URL (prefer env var over alembic.ini) ---
 database_url = os.getenv("DATABASE_URL")

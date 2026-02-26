@@ -1,40 +1,40 @@
 """Task management routes."""
 
-from typing import Optional
-from datetime import datetime
 import time
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.orm import Session
-from sqlalchemy import select, and_, or_, func, text
+from datetime import datetime
 
-from ..models import Task, TaskStatus, TaskPriority, User
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import and_, func, or_, select, text
+from sqlalchemy.orm import Session
+
+from ..core.dependencies import get_current_active_user, get_db, get_user_task
+from ..models import Task, TaskPriority, TaskStatus, User
 from ..schemas import (
-    TaskCreate,
-    TaskUpdate,
-    TaskOut,
-    TaskListResponse,
-    TaskSearchResponse,
     SearchFilters,
+    TaskCreate,
+    TaskListResponse,
+    TaskOut,
+    TaskSearchResponse,
+    TaskUpdate,
 )
-from ..core.dependencies import get_db, get_current_active_user, get_user_task
+from ..services.activity_logger import ActivityLogger
 from ..utils.pagination import create_task_cursor, get_pagination_params
 from ..utils.search_utils import (
     build_search_query,
+    calculate_search_stats,
     get_search_suggestions,
     normalize_search_query,
-    calculate_search_stats,
 )
-from ..services.activity_logger import ActivityLogger
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
 
 def apply_task_filters(
     stmt,
-    status_: Optional[TaskStatus] = None,
-    category: Optional[str] = None,
-    due_before: Optional[datetime] = None,
-    archived: Optional[bool] = None,
+    status_: TaskStatus | None = None,
+    category: str | None = None,
+    due_before: datetime | None = None,
+    archived: bool | None = None,
 ):
     """Apply common task filters to a SQLAlchemy query statement."""
     if status_ is not None:
@@ -83,12 +83,12 @@ def create_task(
 
 @router.get("", response_model=TaskListResponse)
 def list_tasks(
-    cursor: Optional[str] = Query(None, description="Cursor for pagination"),
+    cursor: str | None = Query(None, description="Cursor for pagination"),
     limit: int = Query(20, ge=1, le=100, description="Number of tasks per page"),
-    status_: Optional[TaskStatus] = Query(None, alias="status"),
-    category: Optional[str] = Query(None, description="Filter by category"),
-    due_before: Optional[datetime] = None,
-    archived: Optional[bool] = None,
+    status_: TaskStatus | None = Query(None, alias="status"),
+    category: str | None = Query(None, description="Filter by category"),
+    due_before: datetime | None = None,
+    archived: bool | None = None,
     include_total: bool = Query(
         False, description="Include total count (expensive for large datasets)"
     ),
@@ -155,24 +155,24 @@ def list_tasks(
 def search_tasks(
     q: str = Query(..., min_length=1, max_length=200, description="Search query"),
     limit: int = Query(20, ge=1, le=100, description="Number of results to return"),
-    status_: Optional[TaskStatus] = Query(
+    status_: TaskStatus | None = Query(
         None, alias="status", description="Filter by status"
     ),
-    category: Optional[str] = Query(None, description="Filter by category"),
-    priority: Optional[TaskPriority] = Query(None, description="Filter by priority"),
-    created_after: Optional[datetime] = Query(
+    category: str | None = Query(None, description="Filter by category"),
+    priority: TaskPriority | None = Query(None, description="Filter by priority"),
+    created_after: datetime | None = Query(
         None, description="Filter tasks created after this date"
     ),
-    created_before: Optional[datetime] = Query(
+    created_before: datetime | None = Query(
         None, description="Filter tasks created before this date"
     ),
-    due_after: Optional[datetime] = Query(
+    due_after: datetime | None = Query(
         None, description="Filter tasks due after this date"
     ),
-    due_before: Optional[datetime] = Query(
+    due_before: datetime | None = Query(
         None, description="Filter tasks due before this date"
     ),
-    archived: Optional[bool] = Query(None, description="Filter by archived status"),
+    archived: bool | None = Query(None, description="Filter by archived status"),
     include_suggestions: bool = Query(True, description="Include search suggestions"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
@@ -378,8 +378,8 @@ def start_task_timer(
 ):
     """Start timing a task (redirects to new time tracking system)."""
     # Redirect to new time tracking system
-    from .time_tracking import start_timer
     from ..schemas import TimerStart
+    from .time_tracking import start_timer
 
     timer_data = TimerStart(task_id=task.id)
     return start_timer(timer_data, db, current_user)

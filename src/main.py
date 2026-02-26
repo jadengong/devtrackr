@@ -5,24 +5,25 @@ FastAPI application with routing, middleware, and error handling.
 Provides task management, time tracking, and analytics endpoints.
 """
 
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
-from uuid import uuid4
 import logging
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from uuid import uuid4
+
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
-from .routes import tasks as task_router
+from .core.config import Config
+from .core.database import engine
+from .core.middleware import RequestTimingMiddleware, SecurityHeadersMiddleware
+from .routes import activity as activity_router
 from .routes import auth as auth_router
 from .routes import metrics as metrics_router
+from .routes import tasks as task_router
 from .routes import time_tracking as time_router
-from .routes import activity as activity_router
-from .core.config import Config
-from .core.middleware import RequestTimingMiddleware, SecurityHeadersMiddleware
-from .core.database import engine
 
 # Create FastAPI app
 app = FastAPI(
@@ -40,7 +41,7 @@ API_VERSION = Config.API_VERSION
 
 
 # Custom exception classes
-class DevTrackrException(Exception):
+class DevTrackrError(Exception):
     """Base exception for DevTrackr application"""
 
     def __init__(self, message: str, status_code: int = 500, details: dict = None):
@@ -50,35 +51,35 @@ class DevTrackrException(Exception):
         super().__init__(self.message)
 
 
-class ValidationError(DevTrackrException):
+class ValidationError(DevTrackrError):
     """Raised when validation fails"""
 
     def __init__(self, message: str, details: dict = None):
         super().__init__(message, 400, details)
 
 
-class NotFoundError(DevTrackrException):
+class NotFoundError(DevTrackrError):
     """Raised when a resource is not found"""
 
     def __init__(self, message: str = "Resource not found", details: dict = None):
         super().__init__(message, 404, details)
 
 
-class UnauthorizedError(DevTrackrException):
+class UnauthorizedError(DevTrackrError):
     """Raised when authentication fails"""
 
     def __init__(self, message: str = "Unauthorized", details: dict = None):
         super().__init__(message, 401, details)
 
 
-class ForbiddenError(DevTrackrException):
+class ForbiddenError(DevTrackrError):
     """Raised when access is forbidden"""
 
     def __init__(self, message: str = "Forbidden", details: dict = None):
         super().__init__(message, 403, details)
 
 
-class ConflictError(DevTrackrException):
+class ConflictError(DevTrackrError):
     """Raised when a resource conflict occurs (e.g., duplicate entry)"""
 
     def __init__(self, message: str = "Resource conflict", details: dict = None):
@@ -93,7 +94,7 @@ app.include_router(time_router.router)
 app.include_router(activity_router.router)
 
 # Track application start time for readiness metrics
-START_TIME = datetime.now(timezone.utc)
+START_TIME = datetime.now(UTC)
 
 # Track request statistics
 request_stats = {
@@ -131,15 +132,15 @@ def create_error_response(
                 "message": message,
                 "details": details or {},
                 "request_id": request_id,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             },
         },
     )
 
 
 # Global exception handlers
-@app.exception_handler(DevTrackrException)
-async def devtrackr_exception_handler(request: Request, exc: DevTrackrException):
+@app.exception_handler(DevTrackrError)
+async def devtrackr_exception_handler(request: Request, exc: DevTrackrError):
     """Handle custom DevTrackr exceptions"""
     request_id = getattr(request.state, "request_id", "unknown")
     logger.error(
@@ -231,7 +232,7 @@ def root():
         "version": API_VERSION,
         "docs": "/docs",
         "health": "/health",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
 
@@ -242,7 +243,7 @@ def health_check():
         "status": "healthy",
         "service": "DevTrackr API",
         "version": API_VERSION,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
 
@@ -255,11 +256,11 @@ def liveness_probe():
 # Readiness probe with simple uptime metric
 @app.get("/ready")
 def readiness_probe():
-    uptime_seconds = int((datetime.now(timezone.utc) - START_TIME).total_seconds())
+    uptime_seconds = int((datetime.now(UTC) - START_TIME).total_seconds())
     return {
         "status": "ready",
         "uptime_seconds": uptime_seconds,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
 
@@ -288,9 +289,9 @@ def get_stats():
             )[:10]
         ),
         "uptime_seconds": int(
-            (datetime.now(timezone.utc) - START_TIME).total_seconds()
+            (datetime.now(UTC) - START_TIME).total_seconds()
         ),
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
 
@@ -298,7 +299,7 @@ def get_stats():
 @app.get("/info")
 def info():
     """Basic runtime and configuration info (non-sensitive)."""
-    uptime_seconds = int((datetime.now(timezone.utc) - START_TIME).total_seconds())
+    uptime_seconds = int((datetime.now(UTC) - START_TIME).total_seconds())
     return {
         "service": Config.API_TITLE,
         "version": API_VERSION,
@@ -318,12 +319,12 @@ def status():
     Comprehensive status endpoint with database connectivity check.
     Useful for monitoring and orchestration systems.
     """
-    uptime_seconds = int((datetime.now(timezone.utc) - START_TIME).total_seconds())
+    uptime_seconds = int((datetime.now(UTC) - START_TIME).total_seconds())
     status_data = {
         "status": "healthy",
         "service": Config.API_TITLE,
         "version": API_VERSION,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "uptime_seconds": uptime_seconds,
         "environment": "production" if Config.is_production() else "development",
         "checks": {
@@ -374,7 +375,7 @@ async def run_migrations():
             return {
                 "message": "Database migrations completed successfully",
                 "output": result.stdout,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
         else:
             raise HTTPException(

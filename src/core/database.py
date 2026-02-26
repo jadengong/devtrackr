@@ -5,8 +5,9 @@ Provides SQLAlchemy engine, session factory, and Base class for ORM models.
 """
 
 import os
+
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 # Prefer single DATABASE_URL, fall back to individual pieces if absent
 DATABASE_URL = os.getenv("DATABASE_URL")
