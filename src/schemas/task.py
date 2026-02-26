@@ -3,12 +3,14 @@
 from datetime import datetime
 from typing import Optional, List
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from ..models.base import TaskStatus, TaskPriority
 
 
 class TaskBase(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+
     title: str = Field(..., max_length=200)
     description: Optional[str] = None
     category: Optional[str] = Field(None, max_length=100)
@@ -24,6 +26,8 @@ class TaskCreate(TaskBase):
 
 
 class TaskUpdate(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+
     title: Optional[str] = None
     description: Optional[str] = None
     category: Optional[str] = Field(None, max_length=100)
@@ -36,14 +40,13 @@ class TaskUpdate(BaseModel):
 
 
 class TaskOut(TaskBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     owner_id: int
     is_archived: bool
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class TaskListResponse(BaseModel):
@@ -66,7 +69,9 @@ class TaskSearchResponse(BaseModel):
 
 
 class SearchFilters(BaseModel):
-    """Search filters"""
+    """Search filters."""
+
+    model_config = ConfigDict(str_strip_whitespace=True)
 
     status: Optional[TaskStatus] = None
     category: Optional[str] = None
