@@ -408,11 +408,15 @@ The project includes automated workflows for:
 
 ### **Code Quality**
 ```bash
-# Format code with Black
+# Format code with Black (or Ruff)
 python -m black .
+# or
+python -m ruff format .
 
 # Check linting
 python -m flake8 .
+# or
+python -m ruff check .
 
 # Type checking
 python -m mypy .
@@ -456,9 +460,13 @@ python -m pytest
 
 # Format code
 python -m black .
+# or
+python -m ruff format .
 
 # Check code quality
 python -m flake8 .
+# or
+python -m ruff check .
 ```
 
 ## **License**
