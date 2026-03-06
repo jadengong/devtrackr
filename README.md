@@ -407,6 +407,8 @@ The project includes automated workflows for:
 ## **Development**
 
 ### **Code Quality**
+Ruff is a fast Python linter + formatter; feel free to use it in place of flake8/Black.
+
 ```bash
 # Format code with Black (or Ruff)
 python -m black .
