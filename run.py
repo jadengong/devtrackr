@@ -5,6 +5,9 @@ Usage:
     python run.py
     or
     uvicorn run:app --reload
+
+Env:
+    DEVTRACKR_HOST (default: 127.0.0.1), DEVTRACKR_PORT (default: 8000).
 """
 
 from src.main import app  # noqa: F401 (exposed for uvicorn run:app)
