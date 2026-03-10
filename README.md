@@ -471,6 +471,8 @@ python -m flake8 .
 python -m ruff check .
 ```
 
+These commands are intended to be run from the project root with your virtual environment activated.
+
 ## **License**
 
 This project is licensed under the MIT License.
