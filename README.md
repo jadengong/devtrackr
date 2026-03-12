@@ -57,7 +57,7 @@ devtrackr-repo/
 
 ## **Quick Start**
 
-If you're on Windows, the PowerShell setup script is the fastest way to get going.
+If you're on Windows, the PowerShell setup script is the most straightforward way to get going.
 
 ### **Prerequisites**
 - Python 3.11 or higher
