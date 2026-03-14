@@ -11,7 +11,7 @@ class Config:
     """Application configuration class"""
 
     # API Configuration
-    API_VERSION = "1.0.2"
+    API_VERSION = "1.0.3"
     API_TITLE = "DevTrackr"
     API_DESCRIPTION = "A developer task tracking and time management API"
 
