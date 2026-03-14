@@ -28,7 +28,7 @@ def generate_slug(text: str) -> str:
     return slug.strip("-")
 
 
-def format_duration(seconds: int) -> str:
+def format_duration(seconds: int | float) -> str:
     """
     Format duration in seconds to human-readable format.
 
@@ -38,6 +38,8 @@ def format_duration(seconds: int) -> str:
     Returns:
         Formatted duration string (e.g., "2h 30m", "45m", "30s")
     """
+    # Normalize and guard against negative durations
+    seconds = int(seconds)
     if seconds < 0:
         return "0s"
     if seconds < 60:
