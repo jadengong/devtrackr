@@ -38,10 +38,8 @@ def format_duration(seconds: int | float) -> str:
     Returns:
         Formatted duration string (e.g., "2h 30m", "45m", "30s")
     """
-    # Normalize and guard against negative durations
-    seconds = int(seconds)
-    if seconds < 0:
-        return "0s"
+    # Normalize and clamp negative durations
+    seconds = max(0, int(seconds))
     if seconds < 60:
         return f"{seconds}s"
 
