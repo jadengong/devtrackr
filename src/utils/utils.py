@@ -7,6 +7,7 @@ Small helper functions that can be used across the application.
 import re
 from datetime import UTC, datetime
 
+EMAIL_PATTERN = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
 
 def generate_slug(text: str) -> str:
     """
@@ -69,8 +70,7 @@ def is_valid_email(email: str) -> bool:
     Returns:
         True if email format is valid, False otherwise
     """
-    pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-    return bool(re.match(pattern, email))
+    return EMAIL_PATTERN.fullmatch(email) is not None
 
 
 def get_current_timestamp() -> str:
