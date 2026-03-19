@@ -1,7 +1,7 @@
 """
 Utilities package.
 
-Contains helper functions and utilities.
+Contains helper functions and utilities used across the application.
 """
 
 from .pagination import (
