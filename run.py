@@ -6,7 +6,7 @@ Usage:
     or
     uvicorn run:app --reload
 
-Env:
+Environment:
     DEVTRACKR_HOST (default: 127.0.0.1), DEVTRACKR_PORT (default: 8000).
 """
 
