@@ -4,7 +4,7 @@ Simple entry point to run the DevTrackr API.
 Usage:
     python run.py
     or
-    uvicorn run:app --reload
+    uvicorn src.main:app --reload
 
 Environment:
     DEVTRACKR_HOST (default: 127.0.0.1), DEVTRACKR_PORT (default: 8000).
