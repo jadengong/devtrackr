@@ -1,7 +1,7 @@
 """
 Core package.
 
-Provides configuration, database, security, and dependency injection.
+Provides configuration, database, security, and dependency helpers.
 """
 
 from .config import Config
