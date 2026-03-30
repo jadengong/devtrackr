@@ -3,7 +3,6 @@ Simple entry point to run the DevTrackr API.
 
 Usage:
     python run.py
-    or
     uvicorn src.main:app --reload
 
 Environment:
