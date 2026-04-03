@@ -4,8 +4,11 @@ Pagination utilities for cursor-based pagination.
 
 import base64
 import json
+from binascii import Error as BinAsciiError
 from datetime import datetime
 from typing import Any
+
+MAX_PAGE_SIZE = 100
 
 
 def encode_cursor(data: dict[str, Any]) -> str:
@@ -19,7 +22,7 @@ def decode_cursor(cursor: str) -> dict[str, Any] | None:
     try:
         json_str = base64.b64decode(cursor.encode()).decode()
         return json.loads(json_str)
-    except Exception:
+    except (BinAsciiError, UnicodeDecodeError, json.JSONDecodeError):
         return None
 
 
@@ -56,8 +59,8 @@ def get_pagination_params(
     Returns:
         Tuple of (cursor_id, cursor_created_at, limit)
     """
-    if limit > 100:
-        limit = 100  # Cap at 100 items per page
+    if limit > MAX_PAGE_SIZE:
+        limit = MAX_PAGE_SIZE
 
     cursor_id, cursor_created_at = None, None
     if cursor:
