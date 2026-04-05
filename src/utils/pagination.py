@@ -8,6 +8,7 @@ from binascii import Error as BinAsciiError
 from datetime import datetime
 from typing import Any
 
+MIN_PAGE_SIZE = 1
 MAX_PAGE_SIZE = 100
 
 
@@ -59,8 +60,7 @@ def get_pagination_params(
     Returns:
         Tuple of (cursor_id, cursor_created_at, limit)
     """
-    if limit > MAX_PAGE_SIZE:
-        limit = MAX_PAGE_SIZE
+    limit = max(MIN_PAGE_SIZE, min(limit, MAX_PAGE_SIZE))
 
     cursor_id, cursor_created_at = None, None
     if cursor:
