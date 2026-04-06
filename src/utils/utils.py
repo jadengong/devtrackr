@@ -9,6 +9,7 @@ from datetime import UTC, datetime
 
 EMAIL_PATTERN = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
 
+
 def generate_slug(text: str) -> str:
     """
     Generate a URL-friendly slug from text.
