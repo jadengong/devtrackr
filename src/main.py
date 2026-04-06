@@ -239,10 +239,12 @@ def root():
 # Health check endpoint for Docker and monitoring
 @app.get("/health")
 def health_check():
+    uptime_seconds = int((datetime.now(UTC) - START_TIME).total_seconds())
     return {
         "status": "healthy",
         "service": "DevTrackr API",
         "version": API_VERSION,
+        "uptime_seconds": uptime_seconds,
         "timestamp": datetime.now(UTC).isoformat(),
     }
 
