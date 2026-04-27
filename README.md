@@ -247,11 +247,11 @@ Here's a simple example of how a developer would use DevTrackr throughout their 
 ### **During Work: Time Tracking**
 
 3. **Start Timer** - Begin tracking time on a task
-   - `POST /time/start` - Start a timer for a specific task
+   - `POST /time-tracking/start` - Start a timer for a specific task
    - Work on the task...
 
 4. **Stop Timer** - Finish working on the task
-   - `POST /time/stop/{time_entry_id}` - Stop the active timer
+   - `POST /time-tracking/stop` - Stop the active timer
    - Time is automatically calculated and recorded
 
 5. **Update Task Status** - Mark progress
@@ -268,7 +268,7 @@ Here's a simple example of how a developer would use DevTrackr throughout their 
 
 7. **Check Analytics** - Review productivity
    - `GET /metrics/summary` - Task statistics by status, priority, category
-   - `GET /time/summary` - Time tracking summary with breakdowns
+   - `GET /time-tracking/summary` - Time tracking summary with breakdowns
    - `GET /activity` - View activity log of all actions
 
 ### **Try It Out**
