@@ -232,6 +232,8 @@ def root():
         "version": API_VERSION,
         "docs": "/docs",
         "health": "/health",
+        "live": "/live",
+        "ready": "/ready",
         "timestamp": datetime.now(UTC).isoformat(),
     }
 
@@ -252,6 +254,7 @@ def health_check():
 # Lightweight liveness probe
 @app.get("/live")
 def liveness_probe():
+    """Liveness probe for orchestrators; returns ok if the process is running."""
     return {"status": "ok"}
 
 
