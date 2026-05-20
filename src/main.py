@@ -264,6 +264,7 @@ def readiness_probe():
     uptime_seconds = int((datetime.now(UTC) - START_TIME).total_seconds())
     return {
         "status": "ready",
+        "service": "DevTrackr API",
         "uptime_seconds": uptime_seconds,
         "timestamp": datetime.now(UTC).isoformat(),
     }
