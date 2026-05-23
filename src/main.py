@@ -273,6 +273,7 @@ def readiness_probe():
 # Version endpoint
 @app.get("/version")
 def version():
+    """Return the current API version."""
     return {"version": API_VERSION}
 
 
