@@ -238,9 +238,9 @@ def root():
     }
 
 
-# Health check endpoint for Docker and monitoring
 @app.get("/health")
 def health_check():
+    """Health check endpoint for Docker and monitoring."""
     uptime_seconds = int((datetime.now(UTC) - START_TIME).total_seconds())
     return {
         "status": "healthy",
