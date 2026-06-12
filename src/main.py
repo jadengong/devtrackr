@@ -261,6 +261,7 @@ def liveness_probe():
 # Readiness probe with simple uptime metric
 @app.get("/ready")
 def readiness_probe():
+    """Readiness probe for orchestrators; returns ready when the service can accept traffic."""
     uptime_seconds = int((datetime.now(UTC) - START_TIME).total_seconds())
     return {
         "status": "ready",
